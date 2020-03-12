@@ -25,6 +25,7 @@ HEADERS += \
     draw.h \
     error_code.h \
     mainwindow.h \
+    point.h \
     target.h
 
 FORMS += \

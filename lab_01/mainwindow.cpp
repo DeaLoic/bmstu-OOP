@@ -4,8 +4,10 @@
 
 #include "error_code.h"
 #include "target.h"
+#include "point.h"
+#include "draw.h"
 
-errorCode Draw();
+errorCode Draw(QGraphicsView *drawScene, QPen pen);
 
 MainWindow::MainWindow(QWidget *parent) :
       QMainWindow(parent),
@@ -14,10 +16,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     target targetInit;
-    formTargetInit(targetInit);
+    FormTargetInit(targetInit);
     TargetProcessing(targetInit);
-    Draw();
 
+    QPen blackPen(QColor(0, 0, 0));
+    Draw(ui->paintArea, blackPen);
 }
 
 MainWindow::~MainWindow()
@@ -25,72 +28,64 @@ MainWindow::~MainWindow()
     delete ui;
 
     target targetDelete;
-    FormTargetDelete(targetDelete);
+    FormTargetDestruct(targetDelete);
     TargetProcessing(targetDelete);
 }
 
 void MainWindow::on_buttonMove_released()
 {
-    QMessageBox q;
-    q.setText("Hello world");
-    q.exec();
-
-    float moveX = ui->lineEditMoveX->text().toFloat();
-    float moveY = ui->lineEditMoveY->text().toFloat();
-    float moveZ = ui->lineEditMoveZ->text().toFloat();
+    double moveX = ui->lineEditMoveX->text().toDouble();
+    double moveY = ui->lineEditMoveY->text().toDouble();
+    double moveZ = ui->lineEditMoveZ->text().toDouble();
 
     target targetMove;
     FormTargetMove(targetMove, moveX, moveY, moveZ);
     TargetProcessing(targetMove);
-    Draw();
+
+    QPen blackPen(QColor(0, 0, 0));
+    Draw(ui->paintArea, blackPen);
 }
 
 void MainWindow::on_buttonRotate_released()
 {
-    QMessageBox q;
-    q.setText("Rotate world");
-    q.exec();
-
-    float rotateX = ui->lineEditRotateX->text().toFloat();
-    float rotateY = ui->lineEditRotateY->text().toFloat();
-    float rotateZ = ui->lineEditRotateZ->text().toFloat();
+    double rotateX = ui->lineEditRotateX->text().toDouble();
+    double rotateY = ui->lineEditRotateY->text().toDouble();
+    double rotateZ = ui->lineEditRotateZ->text().toDouble();
 
     target targetRotate;
     FormTargetRotate(targetRotate, rotateX, rotateY, rotateZ);
     TargetProcessing(targetRotate);
-    Draw();
+
+    QPen blackPen(QColor(0, 0, 0));
+    Draw(ui->paintArea, blackPen);
 }
 
 void MainWindow::on_buttonScale_released()
 {
-    QMessageBox q;
-    q.setText("ZooM world");
-    q.exec();
-
-    float scaleX = ui->lineEditScaleX->text().toFloat();
-    float scaleY = ui->lineEditScaleY->text().toFloat();
-    float scaleZ = ui->lineEditScaleZ->text().toFloat();
+    double scaleX = ui->lineEditScaleX->text().toDouble();
+    double scaleY = ui->lineEditScaleY->text().toDouble();
+    double scaleZ = ui->lineEditScaleZ->text().toDouble();
 
     target targetScale;
     FormTargetScale(targetScale, scaleX, scaleY, scaleZ);
     TargetProcessing(targetScale);
-    Draw();
+
+    QPen blackPen(QColor(0, 0, 0));
+    Draw(ui->paintArea, blackPen);
 }
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QMessageBox q;
-    q.setText("Open world");
-    q.exec();
+
 }
 
-errorCode Draw()
+errorCode Draw(QGraphicsScene *drawScene, QPen pen)
 {
-    draw drawArea;
-    formDraw(drawArea);
+    draw drawSetup;
+    formDraw(drawSetup, drawScene, pen);
 
     target targetDraw;
-    formTargetDraw(targetDraw, drawArea);
+    formTargetDraw(targetDraw, drawSetup);
 
     return targetProcessing(targetDraw);
 }

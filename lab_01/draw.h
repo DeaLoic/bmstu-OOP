@@ -5,10 +5,10 @@
 #include "error_code.h"
 typedef struct draw
 {
-    QGraphicsScene &scene;
+    QGraphicsScene *scene;
     QPen pen;
 } draw;
 
-
+errorCode FormDraw(draw &drawSetup, QGraphicsScene drawScene, QPen pen);
 
 #endif // DRAW_H
