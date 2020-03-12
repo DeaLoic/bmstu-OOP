@@ -286,7 +286,7 @@
     <property name="title">
      <string>Scale</string>
     </property>
-    <widget class="QLabel" name="labelScale">
+    <widget class="QLabel" name="labelScaleX">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -400,7 +400,7 @@
      <x>0</x>
      <y>0</y>
      <width>822</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
