@@ -30,7 +30,7 @@ typedef struct target
         moveInfo move;
         rotateInfo rotate;
         scaleInfo scale;
-    } info;
+    };
 } target;
 
 errorCode TargetProcessing(target &pointTarget);

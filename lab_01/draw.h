@@ -3,13 +3,13 @@
 
 #include "QGraphicsView"
 #include "error_code.h"
-
+#include "graphics.h"
 typedef struct drawInfo
 {
-    QGraphicsScene *scene;
-    QPen pen;
+    QGraphicsView *graphicsView;
 } drawInfo;
 
-errorCode FormDraw(drawInfo &drawSetup, QGraphicsScene drawScene, QPen pen);
+errorCode FormDrawInfo(drawInfo &drawSetup, QGraphicsView *drawScene);
+void UpdateGraphicsView(drawInfo &draw, graphics &graph);
 
 #endif // DRAW_H

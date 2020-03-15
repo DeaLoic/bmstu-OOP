@@ -7,7 +7,7 @@
 #include "point.h"
 #include "draw.h"
 
-errorCode DrawByTarget(QGraphicsView *drawScene, target targetToProcessing);
+errorCode DrawByTarget(target &targetToProcessing, Ui::MainWindow* ui);
 errorCode ParseDouble(double &result, QString targetQString);
 void ShowError(errorCode error);
 
@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     target targetInit;
     FormTargetInit(targetInit);
 
-    DrawByTarget(ui->paintArea, targetInit);
+    DrawByTarget(targetInit, ui);
 }
 
 MainWindow::~MainWindow()
@@ -44,10 +44,13 @@ void MainWindow::on_buttonMove_released()
     }
     else
     {
-        target targetMove;
-        FormTargetMove(targetMove, moveX, moveY, moveZ);
+        moveInfo move;
+        FormMoveInfo(move, moveX, moveY, moveZ);
 
-        error = DrawByTarget(ui->paintArea, targetMove);
+        target targetMove;
+        FormTargetMove(targetMove, move);
+
+        error = DrawByTarget(targetMove, ui);
     }
     
     if (error != SUCCES)
@@ -68,10 +71,13 @@ void MainWindow::on_buttonRotate_released()
     }
     else
     {
-        target targetRotate;
-        FormTargetRotate(targetRotate, rotateX, rotateY, rotateZ);
+        rotateInfo rotate;
+        FormRotateInfo(rotate, rotateX, rotateY, rotateZ);
 
-        error = DrawByTarget(ui->paintArea, targetRotate);
+        target targetRotate;
+        FormTargetRotate(targetRotate, rotate);
+
+        error = DrawByTarget(targetRotate, ui);
     }
     
     if (error != SUCCES)
@@ -92,10 +98,13 @@ void MainWindow::on_buttonScale_released()
     }
     else
     {
-        target targetScale;
-        FormTargetScale(targetScale, scaleX, scaleY, scaleZ);
+        scaleInfo scale;
+        FormScaleInfo(scale, scaleX, scaleY, scaleZ);
 
-        error = DrawByTarget(ui->paintArea, targetScale);
+        target targetScale;
+        FormTargetScale(targetScale, scale);
+
+        error = DrawByTarget(targetScale, ui);
     }
     
     if (error != SUCCES)
@@ -106,23 +115,53 @@ void MainWindow::on_buttonScale_released()
 
 void MainWindow::on_actionOpen_triggered()
 {
+    target targetLoad;
+    loadInfo load;
+    FormLoadInfo(load, "cube.txt");
+    FormTargetLoad(targetLoad, load);
 
+    errorCode error = DrawByTarget(targetLoad, ui);
+
+    if (error != SUCCES)
+    {
+        ShowError(error);
+    }
 }
 
-errorCode DrawByTarget(QGraphicsView *drawArea, target targetToProcessing)
+errorCode DrawByTarget(target &targetToProcessing, Ui::MainWindow* ui)
 {
     errorCode error = TargetProcessing(targetToProcessing);
 
     if (error == SUCCES)
     {
-        draw drawSetup;
-        formDraw(drawSetup, drawArea);
+        drawInfo draw;
+        QGraphicsView *graphicsView = ui->paintArea;
+        FormDrawInfo(draw, graphicsView);
 
         target targetDraw;
-        formTargetDraw(targetDraw, drawSetup);
+        FormTargetDraw(targetDraw, draw);
 
-        error = targetProcessing(targetDraw);
+        error = TargetProcessing(targetDraw);
     }
 
     return error;
+}
+
+errorCode ParseDouble(double &result, QString targetQString)
+{
+    bool isCorrect;
+    result = targetQString.toDouble(&isCorrect);
+
+    errorCode error = SUCCES;
+    if (!isCorrect)
+    {
+        error = PARSE_ERROR;
+    }
+
+    return error;
+}
+
+void ShowError(errorCode error)
+{
+    QMessageBox::critical(NULL, "ERROR", GetErrorString(error));
 }

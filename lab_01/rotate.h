@@ -6,12 +6,21 @@
 
 typedef struct rotateInfo
 {
-    double radiansX;
-    double radiansY;
-    double radiansZ;
+    double degreeX;
+    double degreeY;
+    double degreeZ;
 } rotateInfo;
 
+
+void FormRotateInfo(rotateInfo &move, double degreeX, double degreeY, double degreeZ);
+
+double SinDegree(double angleInDegree);
+double CosDegree(double angleInDegree);
+
 void RotatePoint(point &rotatingPoint, rotateInfo &rotate);
+void RotateDimensionX(point &rotatingPoint, double angle);
+void RotateDimensionY(point &rotatingPoint, double angle);
+void RotateDimensionZ(point &rotatingPoint, double angle);
 errorCode RotatePoints(pointArray &points, rotateInfo &rotate);
 
 #endif

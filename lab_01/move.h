@@ -11,6 +11,10 @@ typedef struct moveInfo
     int dz;
 } moveInfo;
 
-errorCode MovePoint(point &movingPoint, moveInfo move);
+void FormMoveInfo(moveInfo &move, double dx, double dy, double dz);
+
+void MovePoint(point &movingPoint, moveInfo &move);
+errorCode MovePoints(pointArray &points, moveInfo &move);
+
 
 #endif

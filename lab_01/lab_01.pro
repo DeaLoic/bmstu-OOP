@@ -17,15 +17,31 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     draw.cpp \
+    error_code.cpp \
+    graphics.cpp \
+    link.cpp \
+    load.cpp \
     main.cpp \
     mainwindow.cpp \
+    model.cpp \
+    move.cpp \
+    point.cpp \
+    rotate.cpp \
+    scale.cpp \
     target.cpp
 
 HEADERS += \
     draw.h \
     error_code.h \
+    graphics.h \
+    link.h \
+    load.h \
     mainwindow.h \
+    model.h \
+    move.h \
     point.h \
+    rotate.h \
+    scale.h \
     target.h
 
 FORMS += \

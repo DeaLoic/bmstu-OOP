@@ -11,6 +11,9 @@ typedef struct scaleInfo
     double scaleZ;
 } scaleInfo;
 
-errorCode ScalePoint(point &scalingPoint, scaleInfo &scale);
+void FormScaleInfo(scaleInfo &scale, double scaleX, double scaleY, double scaleZ);
+
+void ScalePoint(point &scalingPoint, scaleInfo &scale);
+errorCode ScalePoints(pointArray &points, scaleInfo &scale);
 
 #endif
