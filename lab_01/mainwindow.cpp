@@ -7,7 +7,9 @@
 #include "point.h"
 #include "draw.h"
 
-errorCode Draw(QGraphicsView *drawScene, QPen pen);
+errorCode DrawByTarget(QGraphicsView *drawScene, target targetToProcessing);
+errorCode ParseDouble(double &result, QString targetQString);
+void ShowError(errorCode error);
 
 MainWindow::MainWindow(QWidget *parent) :
       QMainWindow(parent),
@@ -17,10 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     target targetInit;
     FormTargetInit(targetInit);
-    TargetProcessing(targetInit);
 
-    QPen blackPen(QColor(0, 0, 0));
-    Draw(ui->paintArea, blackPen);
+    DrawByTarget(ui->paintArea, targetInit);
 }
 
 MainWindow::~MainWindow()
@@ -34,44 +34,74 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_buttonMove_released()
 {
-    double moveX = ui->lineEditMoveX->text().toDouble();
-    double moveY = ui->lineEditMoveY->text().toDouble();
-    double moveZ = ui->lineEditMoveZ->text().toDouble();
+    errorCode error = SUCCES;
+    double moveX, moveY, moveZ;
+    if (ParseDouble(moveX, ui->lineEditMoveX->text()) != SUCCES ||
+        ParseDouble(moveY, ui->lineEditMoveY->text()) != SUCCES ||
+        ParseDouble(moveZ, ui->lineEditMoveZ->text()) != SUCCES)
+    {
+        error = PARSE_ERROR;
+    }
+    else
+    {
+        target targetMove;
+        FormTargetMove(targetMove, moveX, moveY, moveZ);
 
-    target targetMove;
-    FormTargetMove(targetMove, moveX, moveY, moveZ);
-    TargetProcessing(targetMove);
-
-    QPen blackPen(QColor(0, 0, 0));
-    Draw(ui->paintArea, blackPen);
+        error = DrawByTarget(ui->paintArea, targetMove);
+    }
+    
+    if (error != SUCCES)
+    {
+        ShowError(error);
+    }
 }
 
 void MainWindow::on_buttonRotate_released()
 {
-    double rotateX = ui->lineEditRotateX->text().toDouble();
-    double rotateY = ui->lineEditRotateY->text().toDouble();
-    double rotateZ = ui->lineEditRotateZ->text().toDouble();
+    errorCode error = SUCCES;
+    double rotateX, rotateY, rotateZ;
+    if (ParseDouble(rotateX, ui->lineEditRotateX->text()) != SUCCES ||
+        ParseDouble(rotateY, ui->lineEditRotateY->text()) != SUCCES ||
+        ParseDouble(rotateZ, ui->lineEditRotateZ->text()) != SUCCES)
+    {
+        error = PARSE_ERROR;
+    }
+    else
+    {
+        target targetRotate;
+        FormTargetRotate(targetRotate, rotateX, rotateY, rotateZ);
 
-    target targetRotate;
-    FormTargetRotate(targetRotate, rotateX, rotateY, rotateZ);
-    TargetProcessing(targetRotate);
-
-    QPen blackPen(QColor(0, 0, 0));
-    Draw(ui->paintArea, blackPen);
+        error = DrawByTarget(ui->paintArea, targetRotate);
+    }
+    
+    if (error != SUCCES)
+    {
+        ShowError(error);
+    }
 }
 
 void MainWindow::on_buttonScale_released()
 {
-    double scaleX = ui->lineEditScaleX->text().toDouble();
-    double scaleY = ui->lineEditScaleY->text().toDouble();
-    double scaleZ = ui->lineEditScaleZ->text().toDouble();
+    errorCode error = SUCCES;
+    double scaleX, scaleY, scaleZ;
+    if (ParseDouble(scaleX, ui->lineEditScaleX->text()) != SUCCES ||
+        ParseDouble(scaleY, ui->lineEditScaleY->text()) != SUCCES ||
+        ParseDouble(scaleZ, ui->lineEditScaleZ->text()) != SUCCES)
+    {
+        error = PARSE_ERROR;
+    }
+    else
+    {
+        target targetScale;
+        FormTargetScale(targetScale, scaleX, scaleY, scaleZ);
 
-    target targetScale;
-    FormTargetScale(targetScale, scaleX, scaleY, scaleZ);
-    TargetProcessing(targetScale);
-
-    QPen blackPen(QColor(0, 0, 0));
-    Draw(ui->paintArea, blackPen);
+        error = DrawByTarget(ui->paintArea, targetScale);
+    }
+    
+    if (error != SUCCES)
+    {
+        ShowError(error);
+    }
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -79,13 +109,20 @@ void MainWindow::on_actionOpen_triggered()
 
 }
 
-errorCode Draw(QGraphicsScene *drawScene, QPen pen)
+errorCode DrawByTarget(QGraphicsView *drawArea, target targetToProcessing)
 {
-    draw drawSetup;
-    formDraw(drawSetup, drawScene, pen);
+    errorCode error = TargetProcessing(targetToProcessing);
 
-    target targetDraw;
-    formTargetDraw(targetDraw, drawSetup);
+    if (error == SUCCES)
+    {
+        draw drawSetup;
+        formDraw(drawSetup, drawArea);
 
-    return targetProcessing(targetDraw);
+        target targetDraw;
+        formTargetDraw(targetDraw, drawSetup);
+
+        error = targetProcessing(targetDraw);
+    }
+
+    return error;
 }

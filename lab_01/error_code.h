@@ -7,6 +7,7 @@ typedef enum errorCode
     FILE_OPEN = -10,
     MEMORY_ERROR,
     INVALID_ARGUMENT,
+    PARSE_ERROR,
     BAD_ERROR,
 } errorCode;
 

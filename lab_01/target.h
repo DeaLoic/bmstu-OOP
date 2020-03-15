@@ -3,13 +3,21 @@
 
 #include "error_code.h"
 
+#include "draw.h"
+#include "move.h"
+#include "scale.h"
+#include "rotate.h"
+#include "load.h"
+
 typedef enum targetType
 {
     INIT,
     DESTRUCT,
+    LOAD,
     DRAW,
     MOVE,
     ROTATE,
+    SCALE,
 } targetType;
 
 typedef struct target
@@ -17,21 +25,22 @@ typedef struct target
     targetType type;
     union
     {
-        initInfo init;
-        desturctInfo destruct;
+        loadInfo load;
         drawInfo draw;
         moveInfo move;
         rotateInfo rotate;
+        scaleInfo scale;
     } info;
 } target;
 
-errorCode TargetProcessing(target pointTarget);
+errorCode TargetProcessing(target &pointTarget);
 
-errorCode FormTargetInit(target& targetInit);
-errorCode FormTargetDestruct(target& targetDestruct);
-errorCode FormTargetDraw(target& targetDraw);
-errorCode FormTargetMove(target& targetMove, double moveX, double moveY, double moveZ);
-errorCode FormTargetRotate(target& targetRotate, double rotateX, double rotateY, double rotateZ);
-errorCode FormTargetScale(target& targetRotate, double scaleX, double scaleY, double scaleZ);
+void FormTargetInit(target &targetInit);
+void FormTargetDestruct(target &targetDestruct);
+void FormTargetLoad(target &targetLoad, loadInfo &loadSetup);
+void FormTargetDraw(target &targetDraw, drawInfo &drawSetup);
+void FormTargetMove(target &targetMove, moveInfo &moveSetup);
+void FormTargetRotate(target &targetRotate, rotateInfo &rotateSetup);
+void FormTargetScale(target &targetRotate, scaleInfo &scaleSetup);
 
 #endif // TARGET_H
