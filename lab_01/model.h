@@ -24,4 +24,6 @@ errorCode MoveModel(model &movingModel, moveInfo &move);
 errorCode RotateModel(model &rotatingModel, rotateInfo &rotate);
 errorCode ScaleModel(model &scalingModel, scaleInfo &scale);
 
+void ReassignmentModel(model &destModel, model &sourceModel);
+
 #endif

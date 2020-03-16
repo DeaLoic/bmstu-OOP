@@ -10,6 +10,7 @@ typedef struct linkArray
 } linkArray;
 
 void SetZeroLinks(linkArray &links);
+void ReassignmentLinks(linkArray &destLinks, linkArray &sourceLinks);
 errorCode ReadLinksByCount(linkArray &links, FILE *file, int count);
 errorCode LinksAllocate(linkArray &links, int size);
 void LinksFree(linkArray &links);

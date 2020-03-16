@@ -3,7 +3,7 @@
 void CreateGraphics(graphics &graph, drawInfo &draw)
 {
     graph.scene = new QGraphicsScene(draw.graphicsView);
-    graph.pen = new QPen(Qt::black);
+    graph.pen = QPen(Qt::black);
     graph.height = draw.graphicsView->height();
     graph.width = draw.graphicsView->width();
 }
@@ -11,7 +11,6 @@ void CreateGraphics(graphics &graph, drawInfo &draw)
 void DeleteGraphics(graphics &graphicsView)
 {
     delete graphicsView.scene;
-    delete graphicsView.pen;
 }
 
 void AddPointDrawOffset(pointDraw &drawingPoint, graphics &draw)
@@ -73,13 +72,12 @@ errorCode DrawLink(graphics &draw, pointArray &points, link &drawingLink)
 
 void DrawLine(graphics &draw, pointDraw &firstPoint, pointDraw &secondPoint)
 {
-    draw.scene->addLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y, *(draw.pen));
+    draw.scene->addLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y, draw.pen);
 }
 
 void UpdateGraph(graphics &graph)
 {
     graph.scene->setSceneRect(QRectF(QPointF(0, 0), QSizeF(graph.height, graph.height)));
-
 }
 
 errorCode UpdateDraw(drawInfo &draw, graphics &graph)

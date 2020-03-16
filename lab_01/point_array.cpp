@@ -21,6 +21,12 @@ void SetZeroPoints(pointArray &points)
     points.array = nullptr;
 }
 
+void ReassignmentPoints(pointArray &destPoints, pointArray &sourcePoints)
+{
+    destPoints.size = sourcePoints.size;
+    destPoints.array = sourcePoints.array;
+}
+
 errorCode ReadPointsByCount(pointArray &points, FILE *file, int count)
 {
     errorCode error = SUCCES;
@@ -30,8 +36,9 @@ errorCode ReadPointsByCount(pointArray &points, FILE *file, int count)
     }
     else
     {
-        error = PointsAllocate(points, count);
-        points.size = count;
+        pointArray tempPoints;
+        error = PointsAllocate(tempPoints, count);
+        tempPoints.size = count;
         for (int i = 0; i < count && error == SUCCES; i++)
         {
             error = ReadPoint(points.array[i], file);
@@ -39,7 +46,11 @@ errorCode ReadPointsByCount(pointArray &points, FILE *file, int count)
 
         if (error != SUCCES)
         {
-            PointsFree(points);
+            PointsFree(tempPoints);
+        }
+        else
+        {
+            ReassignmentPoints(points, tempPoints);
         }
     }
 

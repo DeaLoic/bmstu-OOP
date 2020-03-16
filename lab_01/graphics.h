@@ -10,7 +10,7 @@
 typedef struct graphics
 {
     QGraphicsScene *scene;
-    QPen *pen;
+    QPen pen;
     int height;
     int width;
 } graphics;

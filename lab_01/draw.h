@@ -9,6 +9,6 @@ typedef struct drawInfo
     QGraphicsView *graphicsView;
 } drawInfo;
 
-errorCode FormDrawInfo(drawInfo &drawSetup, QGraphicsView *drawScene);
+errorCode FormDrawInfo(drawInfo &drawSetup, QGraphicsView *drawView);
 
 #endif // DRAW_H

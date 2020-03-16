@@ -6,6 +6,12 @@ void SetZeroLinks(linkArray &links)
     links.array = nullptr;
 }
 
+void ReassignmentLinks(linkArray &destLinks, linkArray &sourceLinks)
+{
+    destLinks.size = sourceLinks.size;
+    destLinks.array = sourceLinks.array;
+}
+
 errorCode ReadLinksByCount(linkArray &links, FILE *file, int count)
 {
     errorCode error = SUCCES;
@@ -15,16 +21,21 @@ errorCode ReadLinksByCount(linkArray &links, FILE *file, int count)
     }
     else
     {
-        error = LinksAllocate(links, count);
-        links.size = count;
+        linkArray tempLinks;
+        error = LinksAllocate(tempLinks, count);
+        tempLinks.size = count;
         for (int i = 0; i < count && error == SUCCES; i++)
         {
-            error = ReadLink(links.array[i], file);
+            error = ReadLink(tempLinks.array[i], file);
         }
 
         if (error != SUCCES)
         {
-            LinksFree(links);
+            LinksFree(tempLinks);
+        }
+        else
+        {
+            ReassignmentLinks(links, tempLinks);
         }
     }
 

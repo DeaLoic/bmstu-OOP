@@ -1,4 +1,4 @@
-#include "model.h"
+ #include "model.h"
 #include "stdio.h"
 #include "graphics.h"
 
@@ -30,11 +30,22 @@ errorCode LoadModel(model &loadingModel, loadInfo &load)
     }
     else
     {
-        error = LoadPoints(loadingModel.points, file);
+        model tempModel = GetNullModel();
+
+        error = LoadPoints(tempModel.points, file);
         if (error == SUCCES)
         {
-            error = LoadLinks(loadingModel.links, file);
+            error = LoadLinks(tempModel.links, file);
+            if (error != SUCCES)
+            {
+                PointsFree(tempModel.points);
+            }
+            else
+            {
+                ReassignmentModel(loadingModel, tempModel);
+            }
         }
+
         fclose(file);
     }
 
@@ -49,7 +60,6 @@ errorCode DrawModel(model &drawingModel, drawInfo &draw)
     errorCode error = DrawLinks(graph, drawingModel.points, drawingModel.links);
     UpdateGraph(graph);
     UpdateDraw(draw, graph);
-    DeleteGraphics(graph);
 
     return error;
 }
@@ -67,4 +77,11 @@ errorCode RotateModel(model &rotatingModel, rotateInfo &rotate)
 errorCode ScaleModel(model &scalingModel, scaleInfo &scale)
 {
     return ScalePoints(scalingModel.points, scale);
+}
+
+void ReassignmentModel(model &destModel, model &sourceModel)
+{
+    DestructModel(destModel);
+    ReassignmentPoints(destModel.points, sourceModel.points);
+    ReassignmentLinks(destModel.links, sourceModel.links);
 }
