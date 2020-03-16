@@ -28,19 +28,6 @@ int GetWidth(graphics &draw)
     return draw.width;
 }
 
-errorCode GetPointDraw(pointDraw &receivedPoint, pointArray &points, int index)
-{
-    point tempPoint;
-    errorCode error = GetPoint(tempPoint, points, index);
-    if (error == SUCCES)
-    {
-        receivedPoint.x = (int)tempPoint.x;
-        receivedPoint.y = (int)tempPoint.y;
-    }
-
-    return error;
-}
-
 errorCode DrawLinks(graphics &draw, pointArray &points, linkArray &links)
 {
     errorCode error = SUCCES;

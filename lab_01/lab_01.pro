@@ -28,6 +28,7 @@ SOURCES += \
     move.cpp \
     point.cpp \
     point_array.cpp \
+    point_draw.cpp \
     rotate.cpp \
     scale.cpp \
     target.cpp
@@ -44,6 +45,7 @@ HEADERS += \
     move.h \
     point.h \
     point_array.h \
+    point_draw.h \
     rotate.h \
     scale.h \
     target.h

@@ -1,4 +1,4 @@
- #include "model.h"
+#include "model.h"
 #include "stdio.h"
 #include "graphics.h"
 

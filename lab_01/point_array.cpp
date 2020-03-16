@@ -41,7 +41,7 @@ errorCode ReadPointsByCount(pointArray &points, FILE *file, int count)
         tempPoints.size = count;
         for (int i = 0; i < count && error == SUCCES; i++)
         {
-            error = ReadPoint(points.array[i], file);
+            error = ReadPoint(tempPoints.array[i], file);
         }
 
         if (error != SUCCES)
