@@ -20,12 +20,14 @@ SOURCES += \
     error_code.cpp \
     graphics.cpp \
     link.cpp \
+    link_array.cpp \
     load.cpp \
     main.cpp \
     mainwindow.cpp \
     model.cpp \
     move.cpp \
     point.cpp \
+    point_array.cpp \
     rotate.cpp \
     scale.cpp \
     target.cpp
@@ -35,11 +37,13 @@ HEADERS += \
     error_code.h \
     graphics.h \
     link.h \
+    link_array.h \
     load.h \
     mainwindow.h \
     model.h \
     move.h \
     point.h \
+    point_array.h \
     rotate.h \
     scale.h \
     target.h

@@ -47,8 +47,8 @@ errorCode DrawModel(model &drawingModel, drawInfo &draw)
     CreateGraphics(graph, draw);
 
     errorCode error = DrawLinks(graph, drawingModel.points, drawingModel.links);
-    UpdateScene(graph);
-    UpdateGraphicsView(draw, graph);
+    UpdateGraph(graph);
+    UpdateDraw(draw, graph);
     DeleteGraphics(graph);
 
     return error;

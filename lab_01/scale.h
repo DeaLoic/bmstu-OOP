@@ -3,6 +3,7 @@
 
 #include "error_code.h"
 #include "point.h"
+#include "point_array.h"
 
 typedef struct scaleInfo
 {

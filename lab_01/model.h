@@ -1,8 +1,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "point.h"
-#include "link.h"
+#include "point_array.h"
+#include "link_array.h"
 #include "load.h"
 #include "draw.h"
 #include "move.h"

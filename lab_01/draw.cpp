@@ -11,10 +11,3 @@ errorCode FormDrawInfo(drawInfo &drawSetup, QGraphicsView *drawScene)
 
     return error;
 }
-
-void UpdateGraphicsView(drawInfo &draw, graphics &graph)
-{
-    QGraphicsScene *prev = draw.graphicsView->scene();
-    delete prev;
-    draw.graphicsView->setScene(graph.scene);
-}
