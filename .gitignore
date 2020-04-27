@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Text
+*.txt
+
+# Archive
+*.rar
