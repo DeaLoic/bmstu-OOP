@@ -7,7 +7,7 @@ public:
     BaseSet();
     BaseSet(const BaseSet & set);
 
-    ~BaseSet();
+    virtual ~BaseSet();
 
     int GetSize();
     bool IsEmpty();
