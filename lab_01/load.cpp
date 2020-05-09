@@ -30,22 +30,11 @@ errorCode ReadCount(int &count, FILE *file)
 errorCode LoadPoints(pointArray &points, FILE *file)
 {
     errorCode error = SUCCES;
-    if (!file)
+    int count;
+    error = ReadCount(count, file);
+    if (error == SUCCES)
     {
-        error = FILE_ERROR;
-    }
-    else
-    {
-        int count;
-        error = ReadCount(count, file);
-        if (error == SUCCES)
-        {
-            error = ReadPointsByCount(points, file, count);
-        }
-        if (error != SUCCES)
-        {
-            PointsFree(points);
-        }
+        error = ReadPointsByCount(points, file, count);
     }
     
     return error;
@@ -54,22 +43,12 @@ errorCode LoadPoints(pointArray &points, FILE *file)
 errorCode LoadLinks(linkArray &links, FILE *file)
 {
     errorCode error = SUCCES;
-    if (!file)
+
+    int count;
+    error = ReadCount(count, file);
+    if (error == SUCCES)
     {
-        error = FILE_ERROR;
-    }
-    else
-    {
-        int count;
-        error = ReadCount(count, file);
-        if (error == SUCCES)
-        {
-            error = ReadLinksByCount(links, file, count);
-        }
-        if (error != SUCCES)
-        {
-            LinksFree(links);
-        }
+        error = ReadLinksByCount(links, file, count);
     }
     
     return error;

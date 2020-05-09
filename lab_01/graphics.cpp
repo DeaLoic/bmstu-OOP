@@ -1,17 +1,16 @@
 #include "graphics.h"
 
-void CreateGraphics(graphics &graphicsView, drawInfo &draw)
+void CreateGraphics(graphics &graph, drawInfo &draw)
 {
-    graphicsView.scene = new QGraphicsScene(draw.graphicsView);
-    graphicsView.pen = new QPen(Qt::black);
-    graphicsView.height = draw.graphicsView->height();
-    graphicsView.width = draw.graphicsView->width();
+    graph.scene = new QGraphicsScene(draw.graphicsView);
+    graph.pen = QPen(Qt::black);
+    graph.height = draw.graphicsView->height();
+    graph.width = draw.graphicsView->width();
 }
 
 void DeleteGraphics(graphics &graphicsView)
 {
     delete graphicsView.scene;
-    delete graphicsView.pen;
 }
 
 void AddPointDrawOffset(pointDraw &drawingPoint, graphics &draw)
@@ -27,19 +26,6 @@ int GetHeight(graphics &draw)
 int GetWidth(graphics &draw)
 {
     return draw.width;
-}
-
-errorCode GetPointDraw(pointDraw &receivedPoint, pointArray &points, int index)
-{
-    point tempPoint;
-    errorCode error = GetPoint(tempPoint, points, index);
-    if (error == SUCCES)
-    {
-        receivedPoint.x = (int)tempPoint.x;
-        receivedPoint.y = (int)tempPoint.y;
-    }
-
-    return error;
 }
 
 errorCode DrawLinks(graphics &draw, pointArray &points, linkArray &links)
@@ -73,11 +59,27 @@ errorCode DrawLink(graphics &draw, pointArray &points, link &drawingLink)
 
 void DrawLine(graphics &draw, pointDraw &firstPoint, pointDraw &secondPoint)
 {
-    draw.scene->addLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y, *(draw.pen));
+    draw.scene->addLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y, draw.pen);
 }
 
-void UpdateScene(graphics &graph)
+void UpdateGraph(graphics &graph)
 {
     graph.scene->setSceneRect(QRectF(QPointF(0, 0), QSizeF(graph.height, graph.height)));
+}
 
+errorCode UpdateDraw(drawInfo &draw, graphics &graph)
+{
+    errorCode error = SUCCES;
+    if (!graph.scene)
+    {
+        error = INVALID_ARGUMENT;
+    }
+    else
+    {
+        QGraphicsScene *prev = draw.graphicsView->scene();
+        delete prev;
+        draw.graphicsView->setScene(graph.scene);
+    }
+
+    return error;
 }

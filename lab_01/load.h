@@ -1,8 +1,8 @@
 #ifndef LOAD_H
 #define LOAD_H
 
-#include "point.h"
-#include "link.h"
+#include "point_array.h"
+#include "link_array.h"
 #include "model.h"
 
 typedef struct loadInfo

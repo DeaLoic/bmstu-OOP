@@ -44,7 +44,7 @@ void RotateDimensionY(point &rotatingPoint, double angle)
     double cosAngle = CosDegree(angle);
     double sinAngle = SinDegree(angle);
 
-    rotatingPoint.y = rotatingPoint.x * cosAngle + rotatingPoint.z * sinAngle;
+    rotatingPoint.x = rotatingPoint.x * cosAngle + rotatingPoint.z * sinAngle;
     rotatingPoint.z = -rotatingPoint.x * sinAngle + rotatingPoint.z * cosAngle;
 }
 
@@ -53,8 +53,8 @@ void RotateDimensionZ(point &rotatingPoint, double angle)
     double cosAngle = CosDegree(angle);
     double sinAngle = SinDegree(angle);
 
-    rotatingPoint.y = rotatingPoint.x * cosAngle + rotatingPoint.y * sinAngle;
-    rotatingPoint.z = -rotatingPoint.x * sinAngle + rotatingPoint.y * cosAngle;
+    rotatingPoint.x = rotatingPoint.x * cosAngle + rotatingPoint.y * sinAngle;
+    rotatingPoint.y = -rotatingPoint.x * sinAngle + rotatingPoint.y * cosAngle;
 }
 
 errorCode RotatePoints(pointArray &points, rotateInfo &rotate)
