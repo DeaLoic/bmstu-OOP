@@ -2,19 +2,19 @@
 #include "Iterator.hpp"
 #include <initializer_list>
 
-template <typename T>
-Set<T>::Set()
+template <typename Type>
+Set<Type>::Set()
 {
     size = 0;
     AllocNewArray(size);
 }
 
-template <typename T>
-Set<T>::Set(const Set<T>& set)
+template <typename Type>
+Set<Type>::Set(const Set<Type>& set)
 {
     size = set.size;
-    AllocNewArray(size)
-    Iterator<T> iterator = new Iterator<T>(set);
+    AllocNewArray(size);
+    Iterator<Type> iterator = new Iterator<Type>(set);
     for (int i = 0; i <= size; i++)
     {
         this->Add(iterator);
@@ -22,16 +22,16 @@ Set<T>::Set(const Set<T>& set)
     }
 }
 
-template <typename T>
-Set<T>::Set(Set<T>&& set)
+template <typename Type>
+Set<Type>::Set(Set<Type>&& set)
 {
     size = set.size;
     elements = set.elements;
     set.elements = nullptr;
 }
 
-template <typename T>
-Set<T>::Set(std::initializer_list<T> arguments)
+template <typename Type>
+Set<Type>::Set(std::initializer_list<Type> arguments)
 {
     if (arguments.size() == 0)
     {
@@ -41,23 +41,23 @@ Set<T>::Set(std::initializer_list<T> arguments)
     int size = int(args.size());
     AllocNewArray(size);
     
-    for (T element : arguments)
+    for (Type element : arguments)
     {
         this->Add(element);
     }
 }
 
-template <typename T>
-Set<T>::~Set()
+template <typename Type>
+Set<Type>::~Set()
 {
-    delete this->elements;
+    elements.reset();
 }
 
-template <typename T>
-bool Set<T>::IsContain(const T element) const
+template <typename Type>
+bool Set<Type>::IsContain(const Type element) const
 {
     bool isContain = false;
-    for (T curElement : *this)
+    for (Type curElement : *this)
     {
         if (curElement == element)
         {
@@ -69,14 +69,14 @@ bool Set<T>::IsContain(const T element) const
     return isContain;
 }
 
-template <typename T>
-bool Set<T>::Add(T element)
+template <typename Type>
+bool Set<Type>::Add(Type element)
 {
     bool isAdded = false;
     if (!this->IsContain(element))
     {
         // Error catch
-        realloc(elements, (size + 1) * sizeof(T));
+        realloc(elements, (size + 1) * sizeof(Type));
         elements[size] = element;
         size++;
         isAdded = true;
@@ -86,40 +86,38 @@ bool Set<T>::Add(T element)
 }
 
 /*
-template <typename T>
-Set<T>::AddRange(std::initializer_list<T> elements);
+template <typename Type>
+Set<Type>::AddRange(std::initializer_list<Type> elements);
 
-template <typename T>
-Set<T>::AddRange(... T elements);
+template <typename Type>
+Set<Type>::AddRange(... Type elements);
 */
 
-template <typename T>
-bool Set<T>::Remove(T element)
+template <typename Type>
+bool Set<Type>::Remove(Type element)
 {
     bool isRemoved = false;
     return isRemoved;
 }
 
-template <typename T>
-Set<T>::Union(const Set<T>& set) const
+template <typename Type>
+Set<Type>& Set<Type>::Union(const Set<Type>& set)
 {
-    Set<T> result = new Set(*this);
-
-    Iterator<T> iterator = new Iterator<T>(set);
+    Iterator<Type> iterator = new Iterator<Type>(set);
     for (; iterator; iterator++)
     {
-        result.Add(*iterator);
+        this.Add(*iterator);
     }
 
-    return result;
+    return *this;
 }
 
-template <typename T>
-Set<T>::Intersection(const Set<T>& set)
+template <typename Type>
+Set<Type>& Set<Type>::Intersection(const Set<Type>& set)
 {
-    Set<T> result = new Set();
+    Set<Type> result = new Set();
 
-    Iterator<T> iterator = new Iterator<T>(set);
+    Iterator<Type> iterator = new Iterator<Type>(set);
     for (; iterator; iterator++)
     {
         if (this->IsContains(*iterator))
@@ -128,15 +126,16 @@ Set<T>::Intersection(const Set<T>& set)
         }
     }
 
-    return result;
+    *this = result;
+    return *this;
 }
 
-template <typename T>
-Set<T>::Difference(const Set<T>& set)
+template <typename Type>
+Set<Type>& Set<Type>::Difference(const Set<Type>& set)
 {
-    Set<T> result = new Set();
+    Set<Type> result = new Set();
 
-    Iterator<T> iterator = new Iterator<T>(*this);
+    Iterator<Type> iterator = new Iterator<Type>(*this);
     for (; iterator; iterator++)
     {
         if (!set.IsContains(*iterator))
@@ -145,44 +144,27 @@ Set<T>::Difference(const Set<T>& set)
         }
     }
 
-    return result;
+    *this = result;
+
+    return *this;
 }
 
-template <typename T>
-Set<T>::SymetricDifference(const Set<T>& set)
+template <typename Type>
+Set<Type>& Set<Type>::SymetricDifference(const Set<Type>& set)
 {
-    Set<T> result = new Set();
-
-    Iterator<T> iterator = new Iterator<T>(set);
-    for (; iterator; iterator++)
-    {
-        if (!this->IsContains(*iterator))
-        {
-            result.Add(*iterator);
-        }
-    }
-
-    Iterator<T> thisIterator = new Iterator<T>(*this);
-    for (; thisIterator; thisIterator++)
-    {
-        if (!set.IsContains(*thisIterator))
-        {
-            result.Add(*thisIterator);
-        }
-    }
-
-    return result;
+    *this = (*this / set) + (set / *this);
+	return (*this);
 }
 
-template <typename T>
-bool Set<T>::IsSubset(const Set<T>& set) const
+template <typename Type>
+bool Set<Type>::IsSubset(const Set<Type>& set) const
 {
     bool IsSubset = true;
 
-    Iterator<T> iterator = new Iterator<T>(set);
+    Iterator<Type> iterator = new Iterator<Type>(set);
     for (; iterator && IsSubset; iterator++)
     {
-        if (this->IsContains(*iterator))
+        if (!this->IsContains(*iterator))
         {
             IsSubset = false;
         }
@@ -191,67 +173,133 @@ bool Set<T>::IsSubset(const Set<T>& set) const
     return result;
 }
 
-template <typename T>
-bool Set<T>::IsEqual(const Set<T>& set) const;
+template <typename Type>
+bool Set<Type>::IsEqual(const Set<Type>& set) const
 {
     return this->GetSize() == set.GetSize() && this->IsSubset(set);
 }
 
-template <typename T>
-bool Set<T>::Clear()
+template <typename Type>
+void Set<Type>::Clear()
 {
-    delete elements;
+    elements.reset();
     size = 0;
 }
 
-template <typename T>
-bool Set<T>::operator ==(const Set<T>& right) const
+template <typename Type>
+bool Set<Type>::operator ==(const Set<Type>& right) const
 {
     return this->IsEqual(right);
 }
 
-template <typename T>
-bool Set<T>::operator !=(const Set<T>& right) const
+template <typename Type>
+bool Set<Type>::operator !=(const Set<Type>& right) const
 {
     return !this->IsEqual(right);
 }
 
-template <typename T>
-Set<T>& Set<T>::operator =(const Set<T>& right);
+template <typename Type>
+Set<Type>& Set<Type>::operator =(const Set<Type>& right)
+{
+    this->Clear();
 
-template <typename T>
-Set<T>& Set<T>::operator =(std::initializer_list<T> arguments);
+    Iterator<Type> iterator(right);
+    for (; iterator; iterator++)
+    {
+        this->Add(*iterator);
+    }
+    
+    return *this;
+}
 
+Set<Type>& operator =(Set<Type>&& right)
+{
+    size = right.size;
+    elements = right.elements;
+    right.elements = nullptr;
+}
 
+template <typename Type>
+Set<Type>& Set<Type>::operator +=(const Set<Type>& right)
+{
+    this->Union(right);
 
-template <typename T>
-Set<T>& Set<T>::operator +=(const T right);
-template <typename T>
-Set<T>& Set<T>::operator +=(const Set<T>& right);
-template <typename T>
-Set<T>& Set<T>::operator +(const Set<T>& left, const T right);
-template <typename T>
-Set<T>& Set<T>::operator +(const Set<T>& left, const Set<T>& right);
+    return *this;
+}
 
-template <typename T>
-Set<T>& Set<T>::operator *=(const T right);
-template <typename T>
-Set<T>& Set<T>::operator *=(const Set<T>& right);
-template <typename T>
-Set<T>& Set<T>::operator *(const Set<T>& left, const T right);
-template <typename T>
-Set<T>& Set<T>::operator *(const Set<T>& left, const Set<T>& right);
+template <typename Type>
+Set<Type> Set<Type>::operator +(const Set<Type>& left, const Type right)
+{
+    value = new Set<Type>(left);
+    value->Add(right)
+    return value;
+}
 
-template <typename T>
-Set<T>& Set<T>::operator -=(const T right);
-template <typename T>
-Set<T>& Set<T>::operator -=(const Set<T>& right);
-template <typename T>
-Set<T>& Set<T>::operator -(const Set<T>& left, const T right);
-template <typename T>
-Set<T>& Set<T>::operator -(const Set<T>& left, const Set<T>& right);
+template <typename Type>
+Set<Type> Set<Type>::operator +(const Set<Type>& left, const Set<Type>& right)
+{
+    value = new Set<Type>(left);
+    value->Union(right)
+    return value;
+}
 
-template <typename T>
-Set<T>& Set<T>::operator /=(const Set<T>& right);
-template <typename T>
-Set<T>& Set<T>::operator /(const Set<T>& left, const Set<T>& right);
+template <typename Type>
+Set<Type>& Set<Type>::operator *=(const Set<Type>& right)
+{
+    this->Intersection(right);
+
+    return *this;
+}
+
+template <typename Type>
+Set<Type> Set<Type>::operator *(const Set<Type>& left, const Set<Type>& right)
+{
+    value = new Set<Type>(left);
+    value->Intersection(right)
+    return value;
+}
+
+template <typename Type>
+Set<Type>& Set<Type>::operator -=(const Type right)
+{
+    this->Remove(right);
+    return *this;
+}
+
+template <typename Type>
+Set<Type>& Set<Type>::operator -=(const Set<Type>& right)
+{
+    this->Difference(right);
+    return *this;
+}
+
+template <typename Type>
+Set<Type> Set<Type>::operator -(const Set<Type>& left, const Type right)
+{
+    value = new Set<Type>(left);
+    value->Remove(right)
+    return value;
+}
+
+template <typename Type>
+Set<Type> Set<Type>::operator -(const Set<Type>& left, const Set<Type>& right)
+{
+    value = new Set<Type>(left);
+    value->Difference(right)
+    return value;
+}
+
+template <typename Type>
+Set<Type>& Set<Type>::operator /=(const Set<Type>& right)
+{
+    this->SymmetricDifference(right);
+    return *this;
+}
+
+template <typename Type>
+Set<Type> Set<Type>::operator /(const Set<Type>& left, const Set<Type>& right)
+{
+    value = new Set<Type>(left);
+    value->SymmetricDifference(right)
+    return value;
+}
