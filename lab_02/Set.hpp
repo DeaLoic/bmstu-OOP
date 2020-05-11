@@ -3,12 +3,15 @@
 
 #include <initializer_list>
 #include <memory>
+#include <iostream>
 
+#include "Iterator.cpp"
 #include "BaseSet.hpp"
 
 template <typename Type>
-class Set : public BaseSet
+class Set : virtual public BaseSet
 {
+    friend Iterator<Type>;
 public:
     Set();
     Set(const Set<Type>& set);
@@ -19,15 +22,12 @@ public:
 
     bool IsContain(const Type element) const;
     bool Add(Type element);
-    // AddRange(std::initializer_list<Type> elements);
-    // AddRange(... Type elements);
     bool Remove(Type element);
-    
 
     Set<Type>& Union(const Set<Type>& set);
     Set<Type>& Intersection(const Set<Type>& set);
     Set<Type>& Difference(const Set<Type>& set);
-    Set<Type>& SymetricDifference(const Set<Type>& set);
+    Set<Type>& SymmetricDifference(const Set<Type>& set);
 
     bool IsSubset(const Set<Type>& set) const;
     bool IsEqual(const Set<Type>& set) const;
@@ -43,32 +43,43 @@ public:
 
     Set<Type>& operator +=(const Type right);
     Set<Type>& operator +=(const Set<Type>& right);
+    Set<Type> operator +(const Type right) const;
+    Set<Type> operator +(const Set<Type>& right) const;
 
-    template<typename T>
-    friend Set<Type> operator +(const Set<Type>& left, const Type right);
-    template<typename T>
-    friend Set<Type> operator +(const Set<Type>& left, const Set<Type>& right);
-
-    Set<Type>& operator *=(const Type right);
-    Set<Type>& operator *=(const Set<Type>& right);
-    template<typename T>
-    friend Set<Type> operator *(const Set<Type>& left, const Type right);
-    template<typename T>
-    friend Set<Type> operator *(const Set<Type>& left, const Set<Type>& right);
 
     Set<Type>& operator -=(const Type right);
     Set<Type>& operator -=(const Set<Type>& right);
-    template<typename T>
-    friend Set<Type> operator -(const Set<Type>& left, const Type right);
-    template<typename T>
-    friend Set<Type> operator -(const Set<Type>& left, const Set<Type>& right);
+    Set<Type> operator -(const Type right) const;
+    Set<Type> operator -(const Set<Type>& right) const;
+
+    Set<Type>& operator *=(const Set<Type>& right);
+    Set<Type> operator *(const Set<Type>& right) const;
 
     Set<Type>& operator /=(const Set<Type>& right);
-    template<typename T>
-    friend Set<Type> operator /(const Set<Type>& left, const Set<Type>& right);
+    Set<Type> operator /(const Set<Type>& right) const;
 
+protected:
+    void AllocNewArray(int size);
 private:
     std::shared_ptr<Type> elements;
 };
+
+template<typename Type>
+std::ostream& operator <<(std::ostream& os, const Set<Type>& set)
+{
+    Iterator<Type> iterator(set);
+    if (iterator)
+    {
+        os << *iterator;
+        iterator++;
+    }
+
+    for (; iterator; iterator++)
+    {
+        os << ' ' << *iterator ;
+    }
+
+    return os;
+}
 
 #endif

@@ -7,11 +7,12 @@ public:
     BaseSet();
     BaseSet(const BaseSet & set);
 
-    virtual ~BaseSet();
+    virtual ~BaseSet() = default;
 
     int GetSize();
     bool IsEmpty();
 protected:
+    int allocateSize = 0;
     int size = 0;
 };
 

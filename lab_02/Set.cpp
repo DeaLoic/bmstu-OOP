@@ -1,6 +1,27 @@
 #include "Set.hpp"
 #include "Iterator.hpp"
+#include "SetExceptions.hpp"
+#include <exception>
 #include <initializer_list>
+
+template <typename Type>
+void Set<Type>::AllocNewArray(int size)
+{
+    std::shared_ptr<Type> temp;
+    try
+    {
+        std::shared_ptr<Type> sp(new Type[size], std::default_delete<Type[]>());
+        temp = sp;
+    }
+    catch (const std::bad_alloc& e)
+    {
+        throw SetBadAlloc(size);
+    }
+
+    elements.reset();
+    elements = temp;
+    allocateSize = size;
+}
 
 template <typename Type>
 Set<Type>::Set()
@@ -12,12 +33,13 @@ Set<Type>::Set()
 template <typename Type>
 Set<Type>::Set(const Set<Type>& set)
 {
-    size = set.size;
-    AllocNewArray(size);
-    Iterator<Type> iterator = new Iterator<Type>(set);
-    for (int i = 0; i <= size; i++)
+    size = 0;
+    AllocNewArray(set.size);
+
+    Iterator<Type> iterator(set);
+    for (int i = 0; i < set.size; i++)
     {
-        this->Add(iterator);
+        this->Add(*iterator);
         iterator++;
     }
 }
@@ -27,18 +49,14 @@ Set<Type>::Set(Set<Type>&& set)
 {
     size = set.size;
     elements = set.elements;
-    set.elements = nullptr;
+    set.elements.reset();
 }
 
 template <typename Type>
 Set<Type>::Set(std::initializer_list<Type> arguments)
 {
-    if (arguments.size() == 0)
-    {
-        Set();
-    }
     
-    int size = int(args.size());
+    int size = int(arguments.size());
     AllocNewArray(size);
     
     for (Type element : arguments)
@@ -57,12 +75,12 @@ template <typename Type>
 bool Set<Type>::IsContain(const Type element) const
 {
     bool isContain = false;
-    for (Type curElement : *this)
+    Iterator<Type> iterator(*this);
+    for (; iterator && !isContain; iterator++)
     {
-        if (curElement == element)
+        if (*iterator == element)
         {
             isContain = true;
-            break;
         }
     }
 
@@ -75,38 +93,67 @@ bool Set<Type>::Add(Type element)
     bool isAdded = false;
     if (!this->IsContain(element))
     {
-        // Error catch
-        realloc(elements, (size + 1) * sizeof(Type));
-        elements[size] = element;
-        size++;
         isAdded = true;
+        if (size < allocateSize)
+        {
+            elements.get()[size++] = element;
+        }
+        else
+        {
+            std::shared_ptr<Type> temp;
+            try
+            {
+                std::shared_ptr<Type> sp(new Type[size + 5], std::default_delete<Type[]>());
+                temp = sp;
+            }
+            catch (const std::bad_alloc&)
+            {
+                throw SetBadAlloc(size + 5);
+            }
+
+            Iterator<Type> iterator(*this);
+            for (int i = 0; i < size; i++, iterator++)
+            {
+                temp.get()[i] = *iterator;
+            }
+            temp.get()[size++] = element;
+            allocateSize += 5;
+            elements.reset();
+            elements = temp;
+        }
     }
 
     return isAdded;
 }
 
-/*
-template <typename Type>
-Set<Type>::AddRange(std::initializer_list<Type> elements);
-
-template <typename Type>
-Set<Type>::AddRange(... Type elements);
-*/
-
 template <typename Type>
 bool Set<Type>::Remove(Type element)
 {
     bool isRemoved = false;
+    if (this->IsContain(element))
+    {
+        size_t index = 0;
+        for (int i = this->GetSize() - 1; i >= 0; i--)
+        {
+            if (elements.get()[i] == element)
+            {
+                index = i;
+            }
+        }
+        elements.get()[index] = elements.get()[this->GetSize() - 1];
+        size--;
+        isRemoved = true;
+    }
     return isRemoved;
 }
 
 template <typename Type>
 Set<Type>& Set<Type>::Union(const Set<Type>& set)
 {
-    Iterator<Type> iterator = new Iterator<Type>(set);
+    Iterator<Type> iterator(set);
     for (; iterator; iterator++)
     {
-        this.Add(*iterator);
+        this->Add(*iterator);
     }
 
     return *this;
@@ -115,12 +162,12 @@ Set<Type>& Set<Type>::Union(const Set<Type>& set)
 template <typename Type>
 Set<Type>& Set<Type>::Intersection(const Set<Type>& set)
 {
-    Set<Type> result = new Set();
+    Set<Type> result;
 
-    Iterator<Type> iterator = new Iterator<Type>(set);
+    Iterator<Type> iterator(set);
     for (; iterator; iterator++)
     {
-        if (this->IsContains(*iterator))
+        if (this->IsContain(*iterator))
         {
             result.Add(*iterator);
         }
@@ -133,27 +180,23 @@ Set<Type>& Set<Type>::Intersection(const Set<Type>& set)
 template <typename Type>
 Set<Type>& Set<Type>::Difference(const Set<Type>& set)
 {
-    Set<Type> result = new Set();
-
-    Iterator<Type> iterator = new Iterator<Type>(*this);
+    Iterator<Type> iterator(set);
     for (; iterator; iterator++)
     {
-        if (!set.IsContains(*iterator))
+        if (this->IsContain(*iterator))
         {
-            result.Add(*iterator);
+            this->Remove(*iterator);
         }
     }
-
-    *this = result;
 
     return *this;
 }
 
 template <typename Type>
-Set<Type>& Set<Type>::SymetricDifference(const Set<Type>& set)
+Set<Type>& Set<Type>::SymmetricDifference(const Set<Type>& set)
 {
-    *this = (*this / set) + (set / *this);
-	return (*this);
+    *this = (*this - set) + (set - *this);
+	return *this;
 }
 
 template <typename Type>
@@ -161,22 +204,22 @@ bool Set<Type>::IsSubset(const Set<Type>& set) const
 {
     bool IsSubset = true;
 
-    Iterator<Type> iterator = new Iterator<Type>(set);
+    Iterator<Type> iterator(set);
     for (; iterator && IsSubset; iterator++)
     {
-        if (!this->IsContains(*iterator))
+        if (!this->IsContain(*iterator))
         {
             IsSubset = false;
         }
     }
 
-    return result;
+    return IsSubset;
 }
 
 template <typename Type>
 bool Set<Type>::IsEqual(const Set<Type>& set) const
 {
-    return this->GetSize() == set.GetSize() && this->IsSubset(set);
+    return (size == set.size) && this->IsSubset(set);
 }
 
 template <typename Type>
@@ -184,6 +227,7 @@ void Set<Type>::Clear()
 {
     elements.reset();
     size = 0;
+    allocateSize = 0;
 }
 
 template <typename Type>
@@ -212,11 +256,38 @@ Set<Type>& Set<Type>::operator =(const Set<Type>& right)
     return *this;
 }
 
-Set<Type>& operator =(Set<Type>&& right)
+template <typename Type>
+Set<Type>& Set<Type>::operator =(Set<Type>&& right)
 {
     size = right.size;
     elements = right.elements;
-    right.elements = nullptr;
+    right.elements.reset();;
+
+    return *this;
+}
+
+template <typename Type>
+Set<Type>& Set<Type>::operator =(std::initializer_list<Type> arguments)
+{
+    this->Clear();
+
+    int size = int(arguments.size());
+    AllocNewArray(size);
+    
+    for (Type element : arguments)
+    {
+        this->Add(element);
+    }
+    
+    return *this;
+}
+
+template <typename Type>
+Set<Type>& Set<Type>::operator +=(const Type right)
+{
+    this->Add(right);
+
+    return *this;
 }
 
 template <typename Type>
@@ -228,18 +299,20 @@ Set<Type>& Set<Type>::operator +=(const Set<Type>& right)
 }
 
 template <typename Type>
-Set<Type> Set<Type>::operator +(const Set<Type>& left, const Type right)
+Set<Type> Set<Type>::operator +(const Type right) const
 {
-    value = new Set<Type>(left);
-    value->Add(right)
+    Set<Type> value(*this);
+    value.Add(right);
+
     return value;
 }
 
 template <typename Type>
-Set<Type> Set<Type>::operator +(const Set<Type>& left, const Set<Type>& right)
+Set<Type> Set<Type>::operator +(const Set<Type>& right) const
 {
-    value = new Set<Type>(left);
-    value->Union(right)
+    Set<Type> value(*this);
+    value.Union(right);
+
     return value;
 }
 
@@ -252,10 +325,10 @@ Set<Type>& Set<Type>::operator *=(const Set<Type>& right)
 }
 
 template <typename Type>
-Set<Type> Set<Type>::operator *(const Set<Type>& left, const Set<Type>& right)
+Set<Type> Set<Type>::operator *(const Set<Type>& right) const
 {
-    value = new Set<Type>(left);
-    value->Intersection(right)
+    Set<Type> value(*this);
+    value.Intersection(right);
     return value;
 }
 
@@ -274,18 +347,18 @@ Set<Type>& Set<Type>::operator -=(const Set<Type>& right)
 }
 
 template <typename Type>
-Set<Type> Set<Type>::operator -(const Set<Type>& left, const Type right)
+Set<Type> Set<Type>::operator -(const Type right) const
 {
-    value = new Set<Type>(left);
-    value->Remove(right)
+    Set<Type> value(*this);
+    value.Remove(right);
     return value;
 }
 
 template <typename Type>
-Set<Type> Set<Type>::operator -(const Set<Type>& left, const Set<Type>& right)
+Set<Type> Set<Type>::operator -(const Set<Type>& right) const
 {
-    value = new Set<Type>(left);
-    value->Difference(right)
+    Set<Type> value(*this);
+    value.Difference(right);
     return value;
 }
 
@@ -297,9 +370,9 @@ Set<Type>& Set<Type>::operator /=(const Set<Type>& right)
 }
 
 template <typename Type>
-Set<Type> Set<Type>::operator /(const Set<Type>& left, const Set<Type>& right)
+Set<Type> Set<Type>::operator /(const Set<Type>& right) const
 {
-    value = new Set<Type>(left);
-    value->SymmetricDifference(right)
+    Set<Type> value(*this);
+    value.SymmetricDifference(right);
     return value;
 }

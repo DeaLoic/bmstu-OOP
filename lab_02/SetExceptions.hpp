@@ -2,7 +2,7 @@
 #define SET_EXCEPTIONS_H
 
 #include <exception>
-#include <string>
+#include <string.h>
 
 class SetException : public std::exception
 {
@@ -15,36 +15,46 @@ public:
 	explicit SetException();
 
 	explicit SetException(const char *message)
-		: message(message) {}
-
-	explicit SetException(std::string &message)
 	{
-		this->message = message.c_str();
-	}
-
-	explicit SetException(const char *message, const char *additional_message)
-		: message(message), additional_message(additional_message) {}
-
-	explicit SetException(std::string &message, std::string &additional_message)
-	{
-		this->message = message.c_str();
-		this->additional_message = additional_message.c_str();
+		int len = strlen(message) + 1;
+		this->message = new char[len];
+		strcpy(this->message, message);
 	}
 
 protected:
-	const char *message;
-	const char *additional_message;
+	char *message;
 };
 
-class SetMemoryError : public SetException
+class SetBadAlloc : public SetException
 {
 public:
-	explicit SetMemoryError()
+    const long long size = 0;
+	explicit SetBadAlloc()
 		: SetException("Allocation memory error!\n") {}
 
-	explicit SetMemoryError(const char *add_message)
-		: SetException("Allocation memory error!\n", add_message) {}
+	explicit SetBadAlloc(long long size)
+		: SetException("Allocation memory error!"), size(size) {}
 
 };
+
+class SetBadWeakPtr : public SetException
+{
+public:
+	explicit SetBadWeakPtr()
+		: SetException("Bad weak pointer!\n") {}
+};
+
+class SetOutOfRange : public SetException
+{
+public:
+    int index;
+	explicit SetOutOfRange()
+		: SetException("Out of range!\n") {}
+
+	explicit SetOutOfRange(int index)
+		: SetException("Out of range!\n"), index(index){}
+};
+
+
 
 #endif // SET_EXCEPTIONS_H

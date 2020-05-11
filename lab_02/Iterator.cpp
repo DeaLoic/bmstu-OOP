@@ -26,7 +26,7 @@ Iterator<Type>::Iterator(const Iterator<Type>& iter)
 template<class Type>
 Type& Iterator<Type>::operator*()
 {
-    check(__LINE__);
+    check();
     
     return *getPtr();
 }
@@ -34,7 +34,7 @@ Type& Iterator<Type>::operator*()
 template<class Type>
 const Type& Iterator<Type>::operator*() const
 {
-    check(__LINE__);
+    check();
     
     return *getPtr();
 }
@@ -42,7 +42,7 @@ const Type& Iterator<Type>::operator*() const
 template<class Type>
 Type* Iterator<Type>::operator->()
 {
-    check(__LINE__);
+    check();
     
     return getPtr();
 }
@@ -50,7 +50,7 @@ Type* Iterator<Type>::operator->()
 template<class Type>
 const Type* Iterator<Type>::operator->() const
 {
-    check(__LINE__);
+    check();
     
     return getPtr();
 }
@@ -58,7 +58,18 @@ const Type* Iterator<Type>::operator->() const
 template<class Type>
 Iterator<Type>& Iterator<Type>::operator=(const Iterator<Type>& iter)
 {
-    check(__LINE__);
+    check();
+    
+    index = iter.index;
+    size = iter.size;
+    ptr = iter.ptr;
+    return *this;
+}
+
+template<class Type>
+Iterator<Type>& Iterator<Type>::operator=(const Iterator<Type>&& iter)
+{
+    check();
     
     index = iter.index;
     size = iter.size;
@@ -69,7 +80,7 @@ Iterator<Type>& Iterator<Type>::operator=(const Iterator<Type>& iter)
 template<class Type>
 Iterator<Type>& Iterator<Type>::operator+=(int step)
 {
-    check(__LINE__);
+    check();
     ptr += step;
     
     return *this;
@@ -78,7 +89,7 @@ Iterator<Type>& Iterator<Type>::operator+=(int step)
 template<class Type>
 Iterator<Type> Iterator<Type>::operator+(int step) const
 {
-    check(__LINE__);
+    check();
 
     Iterator<Type> iter(*this);
     iter += step;
@@ -89,7 +100,7 @@ Iterator<Type> Iterator<Type>::operator+(int step) const
 template<class Type>
 Iterator<Type> Iterator<Type>::operator++(int)
 {
-    check(__LINE__);
+    check();
     ++(*this);
     
     return *this;
@@ -98,7 +109,7 @@ Iterator<Type> Iterator<Type>::operator++(int)
 template<class Type>
 Iterator<Type>& Iterator<Type>::operator++()
 {
-    check(__LINE__);
+    check();
     ++index;
     
     return *this;
@@ -107,7 +118,7 @@ Iterator<Type>& Iterator<Type>::operator++()
 template<class Type>
 Iterator<Type>& Iterator<Type>::operator-=(int size)
 {
-    check(__LINE__);
+    check();
     index -= size;
     
     return *this;
@@ -116,7 +127,7 @@ Iterator<Type>& Iterator<Type>::operator-=(int size)
 template<class Type>
 Iterator<Type> Iterator<Type>::operator-(int size) const
 {
-    check(__LINE__);
+    check();
     
     Iterator<Type> iter(*this);
     iter -= size;
@@ -127,7 +138,7 @@ Iterator<Type> Iterator<Type>::operator-(int size) const
 template<class Type>
 Iterator<Type> Iterator<Type>::operator--(int)
 {
-    check(__LINE__);
+    check();
     --(*this);
     
     return *this;
@@ -136,7 +147,7 @@ Iterator<Type> Iterator<Type>::operator--(int)
 template<class Type>
 Iterator<Type>& Iterator<Type>::operator--()
 {
-    check(__LINE__);
+    check();
     --index;
     
     return *this;
@@ -145,7 +156,7 @@ Iterator<Type>& Iterator<Type>::operator--()
 template<class Type>
 bool Iterator<Type>::operator<=(const Iterator<Type>& iterator) const
 {
-    check(__LINE__);
+    check();
     
     return ptr <= iterator.ptr;
 }
@@ -153,7 +164,7 @@ bool Iterator<Type>::operator<=(const Iterator<Type>& iterator) const
 template<class Type>
 bool Iterator<Type>::operator<(const Iterator<Type>& iterator) const
 {
-    check(__LINE__);
+    check();
     
     return ptr < iterator.ptr;
 }
@@ -161,7 +172,7 @@ bool Iterator<Type>::operator<(const Iterator<Type>& iterator) const
 template<class Type>
 bool Iterator<Type>::operator>=(const Iterator<Type>& iterator) const
 {
-    check(__LINE__);
+    check();
     
     return ptr >= iterator.ptr;
 }
@@ -169,7 +180,7 @@ bool Iterator<Type>::operator>=(const Iterator<Type>& iterator) const
 template<class Type>
 bool Iterator<Type>::operator>(const Iterator<Type>& iterator) const
 {
-    check(__LINE__);
+    check();
     
     return ptr > iterator.ptr;
 }
@@ -177,7 +188,7 @@ bool Iterator<Type>::operator>(const Iterator<Type>& iterator) const
 template<class Type>
 bool Iterator<Type>::operator==(const Iterator<Type>& iterator) const
 {
-    check(__LINE__);
+    check();
     
     return ptr == iterator.ptr;
 }
@@ -185,7 +196,7 @@ bool Iterator<Type>::operator==(const Iterator<Type>& iterator) const
 template<class Type>
 bool Iterator<Type>::operator!=(const Iterator<Type>& iterator) const
 {
-    check(__LINE__);
+    check();
     
     return ptr != iterator.ptr;
 }
@@ -193,16 +204,16 @@ bool Iterator<Type>::operator!=(const Iterator<Type>& iterator) const
 template<class Type>
 Iterator<Type>::operator bool() const
 {
-    check(__LINE__);
+    check();
     
-    if (index >= num_elem || index < 0 || (num_elem == 0))
+    if (index >= size || index < 0 || (size == 0))
         return false;
     else
         return true;
 }
 
 template<class Type>
-bool Iterator<Type>::check(int line) const
+bool Iterator<Type>::check() const
 {
     if (!ptr.expired())
         return true;

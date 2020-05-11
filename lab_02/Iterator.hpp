@@ -1,13 +1,14 @@
 #ifndef ITERATOR_HPP
 #define ITERATOR_HPP
 
+#include <memory>
 #include "BaseIterator.hpp"
 
 template<typename Type>
 class Set;
 
 template<typename Type>
-class Iterator
+class Iterator : public std::iterator<std::forward_iterator_tag, Type>
 {
 public:
     Iterator(const Iterator<Type>& iter);
@@ -20,6 +21,7 @@ public:
     operator bool() const;
     
     Iterator<Type>& operator=(const Iterator<Type>& iter);
+    Iterator<Type>& operator=(const Iterator<Type>&& iter);
     
     Iterator<Type>& operator+=(int n);
     Iterator<Type> operator+(int n) const;
@@ -38,10 +40,12 @@ public:
     bool operator==(const Iterator<Type>& b) const;
     bool operator!=(const Iterator<Type>& b) const;
     
-    bool check(int line) const;
+    bool check() const;
 
 protected:
     Type* getPtr() const;
+    int index = 0;
+    int size = 0;
 
 private:
     std::weak_ptr<Type> ptr;
