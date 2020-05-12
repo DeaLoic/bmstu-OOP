@@ -57,7 +57,6 @@ int main()
 
     cout << "\nAssignment\nBy set lvalue: ";
     set = secondSet;
-    cout << "\nAssignment\nBy set lvalue: ";
     out(set);
     cout << "By set rvalue: ";
     set = secondSet + 9;
@@ -109,7 +108,7 @@ int main()
     emptySet = set;
     emptySet /= secondSet;
     out(emptySet);
-
+    
     return 1;
 }
 

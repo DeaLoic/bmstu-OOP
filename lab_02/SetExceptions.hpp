@@ -2,57 +2,71 @@
 #define SET_EXCEPTIONS_H
 
 #include <exception>
-#include <string.h>
+#include <iostream>
 
 class SetException : public std::exception
 {
 public:
 	virtual const char* what()
 	{
-		return message;
+		return message.c_str();;
 	}
 
-	explicit SetException();
-
-	explicit SetException(const char *message)
+	explicit SetException(const int line = 0,
+					      const char* time = "",
+					      const std::string& info = "Error!")
 	{
-		int len = strlen(message) + 1;
-		this->message = new char[len];
-		strcpy(this->message, message);
+		message = "\nException in:\nLine: " +
+        std::to_string(line) + "\nAt time: " + time + "\nException: " + info;
 	}
 
 protected:
-	char *message;
+	std::string message;
 };
 
-class SetBadAlloc : public SetException
+class SetBadAlloc : virtual public SetException
 {
 public:
-    const long long size = 0;
-	explicit SetBadAlloc()
-		: SetException("Allocation memory error!\n") {}
+	explicit SetBadAlloc( const int size = 0,
+		                  const int line = 0,
+					      const char* time = "",
+					      const std::string& info = "Allocation memory error!")
+		: SetException(line, time, info + std::to_string(size) + "\n") {}
 
-	explicit SetBadAlloc(long long size)
-		: SetException("Allocation memory error!"), size(size) {}
-
+	const char *what() const noexcept override
+    {
+        return message.c_str();
+    }
 };
 
-class SetBadWeakPtr : public SetException
+class SetBadWeakPtr : virtual public SetException
 {
 public:
-	explicit SetBadWeakPtr()
-		: SetException("Bad weak pointer!\n") {}
+	explicit SetBadWeakPtr(const int line = 0,
+					       const char* time = "",
+					       const std::string& info = "Bad weak pointer!\n")
+		: SetException(line, time, info) {}
+	
+	const char *what() const noexcept override
+    {
+        return message.c_str();
+    }
 };
 
-class SetOutOfRange : public SetException
+class SetOutOfRange : virtual public SetException
 {
 public:
     int index;
-	explicit SetOutOfRange()
-		: SetException("Out of range!\n") {}
+	explicit SetOutOfRange(const int index = 0,
+		                   const int line = 0,
+					       const char* time = "",
+					       const std::string& info = "Out of range! Index: ")
+		: SetException(line, time, info + std::to_string(index) + "\n") {}
 
-	explicit SetOutOfRange(int index)
-		: SetException("Out of range!\n"), index(index){}
+	const char *what() const noexcept override
+    {
+        return message.c_str();
+    }
 };
 
 

@@ -40,7 +40,7 @@ public:
     bool operator==(const Iterator<Type>& b) const;
     bool operator!=(const Iterator<Type>& b) const;
     
-    bool check() const;
+    bool check(int line) const;
 
 protected:
     Type* getPtr() const;

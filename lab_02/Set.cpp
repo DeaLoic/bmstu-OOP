@@ -3,7 +3,9 @@
 #include "SetExceptions.hpp"
 #include <exception>
 #include <initializer_list>
+#include <time.h>
 
+using namespace std;
 template <typename Type>
 void Set<Type>::AllocNewArray(int size)
 {
@@ -15,7 +17,8 @@ void Set<Type>::AllocNewArray(int size)
     }
     catch (const std::bad_alloc& e)
     {
-        throw SetBadAlloc(size);
+        time_t currentTime = time(NULL);
+        throw SetBadAlloc(size, __LINE__, ctime(&currentTime));
     }
 
     elements.reset();
@@ -27,7 +30,7 @@ template <typename Type>
 Set<Type>::Set()
 {
     size = 0;
-    AllocNewArray(size);
+    AllocNewArray(1);
 }
 
 template <typename Type>
@@ -108,9 +111,12 @@ bool Set<Type>::Add(Type element)
             }
             catch (const std::bad_alloc&)
             {
-                throw SetBadAlloc(size + 5);
+                
+                time_t currentTime = time(NULL);
+                throw SetBadAlloc(size + 5, __LINE__, ctime(&currentTime));
             }
 
+            
             Iterator<Type> iterator(*this);
             for (int i = 0; i < size; i++, iterator++)
             {
@@ -205,7 +211,7 @@ bool Set<Type>::IsSubset(const Set<Type>& set) const
     bool IsSubset = true;
 
     Iterator<Type> iterator(set);
-    for (; iterator && IsSubset; iterator++)
+    for (; iterator; iterator++)
     {
         if (!this->IsContain(*iterator))
         {
@@ -228,6 +234,7 @@ void Set<Type>::Clear()
     elements.reset();
     size = 0;
     allocateSize = 0;
+    AllocNewArray(1);
 }
 
 template <typename Type>
@@ -246,9 +253,8 @@ template <typename Type>
 Set<Type>& Set<Type>::operator =(const Set<Type>& right)
 {
     this->Clear();
-
     Iterator<Type> iterator(right);
-    for (; iterator; iterator++)
+    for (int i = 0; i < right.size; i++, iterator = iterator + 1)
     {
         this->Add(*iterator);
     }
@@ -261,7 +267,7 @@ Set<Type>& Set<Type>::operator =(Set<Type>&& right)
 {
     size = right.size;
     elements = right.elements;
-    right.elements.reset();;
+    right.elements.reset();
 
     return *this;
 }

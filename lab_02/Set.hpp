@@ -16,7 +16,7 @@ public:
     Set();
     Set(const Set<Type>& set);
     Set(Set<Type>&& set);
-    Set(std::initializer_list<Type> arguments);
+    explicit Set(std::initializer_list<Type> arguments);
 
     ~Set();
 
@@ -36,7 +36,7 @@ public:
     bool operator ==(const Set<Type>& right) const;
     bool operator !=(const Set<Type>& right) const;
     Set<Type>& operator =(const Set<Type>& right);
-    Set<Type>& operator =(Set<Type>&& right);
+    Set<Type>& operator =(Set<Type>&& right);   
     Set<Type>& operator =(std::initializer_list<Type> arguments);
     
 
