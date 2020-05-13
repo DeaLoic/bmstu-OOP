@@ -2,19 +2,20 @@
 #define CONST_ITERATOR_HPP
 
 #include <memory>
+#include <iterator>
 #include "BaseIterator.hpp"
 
 template<typename Type>
 class Set;
 
 template<typename Type>
-class ConstIterator : virtual public BaseIterator
+class ConstIterator : virtual public BaseIterator, virtual public std::iterator<std::output_iterator_tag, Type>
 {
 public:
     ConstIterator(const ConstIterator<Type>& ConstIterator);
-    ConstIterator(const Set<Type>& set);
+    explicit ConstIterator(const Set<Type>& set);
 
-    ~ConstIterator();
+    virtual ~ConstIterator();
 
     const Type& operator*() const;
     const Type* operator->() const;
@@ -33,12 +34,12 @@ public:
     ConstIterator<Type>& operator--();
     ConstIterator<Type> operator--(int);
     
+    bool operator==(const ConstIterator<Type>& constIterator) const;
+    bool operator!=(const ConstIterator<Type>& constIterator) const;
     bool operator<=(const ConstIterator<Type>& constIterator) const;
     bool operator<(const ConstIterator<Type>& constIterator) const;
     bool operator>=(const ConstIterator<Type>& constIterator) const;
     bool operator>(const ConstIterator<Type>& constIterator) const;
-    bool operator==(const ConstIterator<Type>& constIterator) const;
-    bool operator!=(const ConstIterator<Type>& constIterator) const;
     
     bool check(int line) const;
 

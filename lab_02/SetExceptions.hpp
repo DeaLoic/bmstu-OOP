@@ -35,11 +35,6 @@ public:
 					      const char* time = "",
 					      const std::string& info = "Allocation memory error!")
 		: SetException(file, line, time, info + std::to_string(size) + "\n") {}
-
-	const char *what() const noexcept override
-    {
-        return message.c_str();
-    }
 };
 
 class SetBadWeakPtr : virtual public SetException
@@ -50,11 +45,6 @@ public:
 					       const char* time = "",
 					       const std::string& info = "Bad weak pointer!\n")
 		: SetException(file, line, time, info) {}
-	
-	const char *what() const noexcept override
-    {
-        return message.c_str();
-    }
 };
 
 class SetOutOfRange : virtual public SetException
@@ -67,11 +57,6 @@ public:
 					       const char* time = "",
 					       const std::string& info = "Out of range! Index: ")
 		: SetException(file, line, time, info + std::to_string(index) + "\n") {}
-
-	const char *what() const noexcept override
-    {
-        return message.c_str();
-    }
 };
 
 

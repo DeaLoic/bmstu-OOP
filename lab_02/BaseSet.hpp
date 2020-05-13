@@ -5,12 +5,10 @@ class BaseSet
 {
 public:
     BaseSet();
-    BaseSet(const BaseSet & set);
-
     virtual ~BaseSet() = 0;
 
-    int GetSize();
-    bool IsEmpty();
+    virtual int GetSize();
+    virtual bool IsEmpty();
 protected:
     int allocateSize = 0;
     int size = 0;

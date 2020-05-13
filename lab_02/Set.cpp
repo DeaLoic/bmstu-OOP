@@ -39,11 +39,9 @@ Set<Type>::Set(const Set<Type>& set)
     size = 0;
     AllocNewArray(set.size);
 
-    ConstIterator<Type> iterator(set);
-    for (int i = 0; i < set.size; i++)
+    for (Type element : set)
     {
-        this->Add(*iterator);
-        iterator++;
+        this->Add(element);
     }
 }
 
@@ -99,7 +97,7 @@ bool Set<Type>::Add(Type element)
         isAdded = true;
         if (size < allocateSize)
         {
-            elements.get()[size++] = element;
+            elements[size++] = element;
         }
         else
         {
@@ -120,9 +118,9 @@ bool Set<Type>::Add(Type element)
             ConstIterator<Type> iterator(*this);
             for (int i = 0; i < size; i++, iterator++)
             {
-                temp.get()[i] = *iterator;
+                temp[i] = *iterator;
             }
-            temp.get()[size++] = element;
+            temp[size++] = element;
             allocateSize += 5;
             elements.reset();
             elements = temp;
@@ -141,12 +139,12 @@ bool Set<Type>::Remove(Type element)
         size_t index = 0;
         for (int i = this->GetSize() - 1; i >= 0; i--)
         {
-            if (elements.get()[i] == element)
+            if (elements[i] == element)
             {
                 index = i;
             }
         }
-        elements.get()[index] = elements.get()[this->GetSize() - 1];
+        elements[index] = elements[this->GetSize() - 1];
         size--;
         isRemoved = true;
     }
@@ -156,10 +154,9 @@ bool Set<Type>::Remove(Type element)
 template <typename Type>
 Set<Type>& Set<Type>::Union(const Set<Type>& set)
 {
-    ConstIterator<Type> iterator(set);
-    for (; iterator; iterator++)
+    for (Type element : set)
     {
-        this->Add(*iterator);
+        this->Add(element);
     }
 
     return *this;
@@ -170,12 +167,11 @@ Set<Type>& Set<Type>::Intersection(const Set<Type>& set)
 {
     Set<Type> result;
 
-    ConstIterator<Type> iterator(set);
-    for (; iterator; iterator++)
+    for (Type element : set)
     {
-        if (this->IsContain(*iterator))
+        if (this->IsContain(element))
         {
-            result.Add(*iterator);
+            result.Add(element);
         }
     }
 
@@ -186,12 +182,11 @@ Set<Type>& Set<Type>::Intersection(const Set<Type>& set)
 template <typename Type>
 Set<Type>& Set<Type>::Difference(const Set<Type>& set)
 {
-    ConstIterator<Type> iterator(set);
-    for (; iterator; iterator++)
+    for (Type element : set)
     {
-        if (this->IsContain(*iterator))
+        if (this->IsContain(element))
         {
-            this->Remove(*iterator);
+            this->Remove(element);
         }
     }
 
@@ -211,7 +206,7 @@ bool Set<Type>::IsSubset(const Set<Type>& set) const
     bool IsSubset = true;
 
     ConstIterator<Type> iterator(set);
-    for (; iterator; iterator++)
+    for (; iterator && IsSubset; iterator++)
     {
         if (!this->IsContain(*iterator))
         {

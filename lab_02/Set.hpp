@@ -14,12 +14,12 @@ class Set : virtual public BaseSet
     friend ConstIterator<Type>;
 
 public:
-    Set(int allocateSize = 1);
+    explicit Set(int allocateSize = 1);
+    explicit Set(std::initializer_list<Type> arguments);
     Set(const Set<Type>& set);
     Set(Set<Type>&& set);
-    explicit Set(std::initializer_list<Type> arguments);
 
-    ~Set();
+    virtual ~Set();
 
     Set<Type>& operator =(const Set<Type>& right);
     Set<Type>& operator =(Set<Type>&& right);   
@@ -70,16 +70,9 @@ private:
 template<typename Type>
 std::ostream& operator <<(std::ostream& os, const Set<Type>& set)
 {
-    ConstIterator<Type> iterator(set);
-    if (iterator)
+    for (Type element : set)
     {
-        os << *iterator;
-        iterator++;
-    }
-
-    for (; iterator; iterator++)
-    {
-        os << ' ' << *iterator ;
+        os << element << " ";
     }
 
     return os;

@@ -50,7 +50,7 @@ int main()
     set.Remove(6);
     out(set);
 
-    cout << "\nIsContain: " << set.IsContain(1) << "    " << set.IsContain(4) << "\n";
+    cout << "\nIsContain: " << set.IsContain(1) << "    " << set.IsContain(2) << "\n";
     cout << "Clear: ";
     set.Clear();
     out(set);

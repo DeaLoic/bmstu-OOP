@@ -5,7 +5,6 @@ class BaseIterator
 {
 public:
     BaseIterator();
-    BaseIterator(const BaseIterator&);
     virtual ~BaseIterator() = 0;
 
 protected:
