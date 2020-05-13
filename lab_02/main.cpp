@@ -108,7 +108,13 @@ int main()
     emptySet = set;
     emptySet /= secondSet;
     out(emptySet);
-    
+
+    cout << "\nOut by iterator: ";
+    for (auto element : emptySet)
+    {
+        cout << element << " ";
+    }
+
     return 1;
 }
 

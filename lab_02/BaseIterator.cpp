@@ -1,4 +1,3 @@
-
 #include "BaseIterator.hpp"
 
 BaseIterator::BaseIterator()
@@ -11,4 +10,9 @@ BaseIterator::BaseIterator(const BaseIterator& iterator)
 {
     index = iterator.index;
     size = iterator.size;
+}
+
+BaseIterator::~BaseIterator()
+{
+    
 }

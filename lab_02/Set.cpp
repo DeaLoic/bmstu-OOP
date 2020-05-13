@@ -1,5 +1,5 @@
 #include "Set.hpp"
-#include "Iterator.hpp"
+#include "ConstIterator.hpp"
 #include "SetExceptions.hpp"
 #include <exception>
 #include <initializer_list>
@@ -9,16 +9,16 @@ using namespace std;
 template <typename Type>
 void Set<Type>::AllocNewArray(int size)
 {
-    std::shared_ptr<Type> temp;
+    std::shared_ptr<Type[]> temp;
     try
     {
-        std::shared_ptr<Type> sp(new Type[size], std::default_delete<Type[]>());
+        std::shared_ptr<Type[]> sp(new Type[size], std::default_delete<Type[]>());
         temp = sp;
     }
     catch (const std::bad_alloc& e)
     {
         time_t currentTime = time(NULL);
-        throw SetBadAlloc(size, __LINE__, ctime(&currentTime));
+        throw SetBadAlloc(size, __FILE__, __LINE__, ctime(&currentTime));
     }
 
     elements.reset();
@@ -27,10 +27,10 @@ void Set<Type>::AllocNewArray(int size)
 }
 
 template <typename Type>
-Set<Type>::Set()
+Set<Type>::Set(int allocateSize)
 {
     size = 0;
-    AllocNewArray(1);
+    AllocNewArray(allocateSize);
 }
 
 template <typename Type>
@@ -39,7 +39,7 @@ Set<Type>::Set(const Set<Type>& set)
     size = 0;
     AllocNewArray(set.size);
 
-    Iterator<Type> iterator(set);
+    ConstIterator<Type> iterator(set);
     for (int i = 0; i < set.size; i++)
     {
         this->Add(*iterator);
@@ -78,7 +78,7 @@ template <typename Type>
 bool Set<Type>::IsContain(const Type element) const
 {
     bool isContain = false;
-    Iterator<Type> iterator(*this);
+    ConstIterator<Type> iterator(*this);
     for (; iterator && !isContain; iterator++)
     {
         if (*iterator == element)
@@ -103,21 +103,21 @@ bool Set<Type>::Add(Type element)
         }
         else
         {
-            std::shared_ptr<Type> temp;
+            std::shared_ptr<Type[]> temp;
             try
             {
-                std::shared_ptr<Type> sp(new Type[size + 5], std::default_delete<Type[]>());
+                std::shared_ptr<Type[]> sp(new Type[size + 5], std::default_delete<Type[]>());
                 temp = sp;
             }
             catch (const std::bad_alloc&)
             {
                 
                 time_t currentTime = time(NULL);
-                throw SetBadAlloc(size + 5, __LINE__, ctime(&currentTime));
+                throw SetBadAlloc(size + 5, __FILE__, __LINE__, ctime(&currentTime));
             }
 
             
-            Iterator<Type> iterator(*this);
+            ConstIterator<Type> iterator(*this);
             for (int i = 0; i < size; i++, iterator++)
             {
                 temp.get()[i] = *iterator;
@@ -156,7 +156,7 @@ bool Set<Type>::Remove(Type element)
 template <typename Type>
 Set<Type>& Set<Type>::Union(const Set<Type>& set)
 {
-    Iterator<Type> iterator(set);
+    ConstIterator<Type> iterator(set);
     for (; iterator; iterator++)
     {
         this->Add(*iterator);
@@ -170,7 +170,7 @@ Set<Type>& Set<Type>::Intersection(const Set<Type>& set)
 {
     Set<Type> result;
 
-    Iterator<Type> iterator(set);
+    ConstIterator<Type> iterator(set);
     for (; iterator; iterator++)
     {
         if (this->IsContain(*iterator))
@@ -186,7 +186,7 @@ Set<Type>& Set<Type>::Intersection(const Set<Type>& set)
 template <typename Type>
 Set<Type>& Set<Type>::Difference(const Set<Type>& set)
 {
-    Iterator<Type> iterator(set);
+    ConstIterator<Type> iterator(set);
     for (; iterator; iterator++)
     {
         if (this->IsContain(*iterator))
@@ -210,7 +210,7 @@ bool Set<Type>::IsSubset(const Set<Type>& set) const
 {
     bool IsSubset = true;
 
-    Iterator<Type> iterator(set);
+    ConstIterator<Type> iterator(set);
     for (; iterator; iterator++)
     {
         if (!this->IsContain(*iterator))
@@ -253,7 +253,7 @@ template <typename Type>
 Set<Type>& Set<Type>::operator =(const Set<Type>& right)
 {
     this->Clear();
-    Iterator<Type> iterator(right);
+    ConstIterator<Type> iterator(right);
     for (int i = 0; i < right.size; i++, iterator = iterator + 1)
     {
         this->Add(*iterator);
@@ -381,4 +381,19 @@ Set<Type> Set<Type>::operator /(const Set<Type>& right) const
     Set<Type> value(*this);
     value.SymmetricDifference(right);
     return value;
+}
+
+template <typename Type>
+ConstIterator<Type> Set<Type>::begin() const
+{
+    ConstIterator<Type> constIterator(*this);
+    return constIterator;
+}
+
+template <typename Type>
+ConstIterator<Type> Set<Type>::end() const
+{
+    ConstIterator<Type> constIterator(*this);
+    constIterator += this->size;
+    return constIterator;
 }

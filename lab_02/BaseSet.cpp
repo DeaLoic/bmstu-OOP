@@ -10,6 +10,11 @@ BaseSet::BaseSet(const BaseSet & set)
     this->size = set.size;
 }
 
+BaseSet::~BaseSet()
+{
+    
+}
+
 int BaseSet::GetSize()
 {
     return this->size;
