@@ -3,54 +3,51 @@
 void Cabin::Cabin()
 {
     state = STAND_DOOR_CLOSED;
-    QObject::Connect(this, SIGNAL(SignalOpeningDoor()), &doors, SLOT(SlotOpening()));
+    QObject::Connect(this, SIGNAL(SignalFloorReached(int)), &doors, SLOT(SlotOpening()));
     QObject::Connect(this, SIGNAL(SignalClosingDoor()), &doors, SLOT(SlotClosing()));
-    QObject::Connect(&doors, SIGNAL(SignalDoorIsClosed()), this, SLOT(SlotDoorClosed()));
-    QObject::Connect(&doors, SIGNAL(SignalDoorIsNotClosed()), this, SLOT(SlotDoorNotClosing()));
+    QObject::Connect(this, SIGNAL(SignalStanding()), this, SLOT(SlotStanding()));
+    QObject::Connect(&doors, SIGNAL(SignalDoorIsClosed()), this, SLOT(SlotMoving()));
+    QObject::Connect(&movingTimer, SIGNAL(timeout()), this, SLOT(SlotMoving()));
 }
+
 void Cabin::SlotNextFloor(int floor)
 {
-    if (floor == currentFloor)
+    state = GOT_TARGET;
+    targetFloor = floor;
+    if (currentFloor == floor)
     {
-        emit SignalOpeningDoor();
+        emit SignalStanding();
     }
     else
     {
         emit SignalClosingDoor();
-        MoveToFloor(floor);
-    }
+    }    
 }
 
-void Cabin::SlotDoorClosed()
+void Cabin::SlotMoving()
 {
-    state = STAND_DOOR_CLOSED;
-}
-
-void Cabin::SlotDoorNotClosing()
-{
-    state = STAND_DOOR_NOT_CLOSED;
-}
-
-void Cabin::MoveToFloor(int floor)
-{
-    state = STAND_DOOR_NOT_CLOSED;
-}
-
-void MoveToFloor(int floor)
-{
-    if (floor == currentFloor)
+    if (state == MOVING || state == GOT_TARGET)
     {
-        emit SignalOpeningDoor();
-    }
-    else
-    {
-        emit SignalClosingDoor();
-        FloorStep(floor);
-        MoveToFloor(floor);
+        state = MOVING;
+        if (targetFloor == currentFloor)
+        {
+            emit SignalStanding();
+        }
+        else
+        {
+            emit SignalFloorPassed(currentFloor);
+            FloorStep(targetFloor);
+        }
     }
 }
 
-void FloorStep(int floor)
+void Cabin::SlotStanding()
+{
+    state = STAND;
+    emit SignalFloorReached(currentFloor);
+}
+
+void Cabin::FloorStep(int floor)
 {
     int step = 0;
     if (floor > currentFloor)
@@ -63,4 +60,6 @@ void FloorStep(int floor)
     }
 
     currentFloor += step;
+
+    movingTimer.start(CABIN_MOVING_TIME);
 }

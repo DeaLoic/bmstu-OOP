@@ -1,7 +1,11 @@
+#ifndef BUTTON_HPP
+#define BUTTON_HPP
+
 #include <QObject>
 
-class Button
+class Button : public QObject
 {
+    Q_OBJECT
     enum ButtonState
     {
         NOT_PRESSED,
@@ -17,10 +21,12 @@ public signal:
     void SignalButtonPressed(int floor);
 
 public slot:
-    void SlotButtonPress(int floor);
-    void SlotButtonReset(int floor);
+    void ButtonPress(int floor);
+    void ButtonReset(int floor);
 
 private:
     ButtonState state;
     int floor;
-}
+};
+
+#endif

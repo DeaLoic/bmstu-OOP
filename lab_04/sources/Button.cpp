@@ -10,8 +10,7 @@ void Button::Press()
     if (state == NOT_PRESSED)
     {
         emit SignalButtonPressed(floor);
-    }
-    
+    }   
 }
 
 void Button::Reset()

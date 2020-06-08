@@ -1,0 +1,10 @@
+#ifndef TIMING_HPP
+#define TIMING_HPP
+
+#define TIME_DOOR_OPENING 500
+#define TIME_DOOR_CLOSING 500
+#define TIME_DOOR_OPENED 1000
+
+#define CABIN_MOVING_TIME 500
+
+#endif

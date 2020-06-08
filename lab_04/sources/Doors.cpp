@@ -15,16 +15,14 @@ void Doors::SlotOpening()
     if (state == CLOSED)
     {
         state = OPENING;
-        openingTimer.start(TIME_DOOR_OPEN);
-        SignalDoorIsNotClosed();
+        openingTimer.start(TIME_DOOR_OPENING);
     }
     else if (state == CLOSING)
     {
         state = OPENING;
         int time = closingTimer.remainingTime();
         closingTimer.stop();
-        openingTimer.start(TIME_DOOR_OPEN - time);
-        SignalDoorIsNotClosed();
+        openingTimer.start(TIME_DOOR_OPENING - time);
     }
 }
 
@@ -33,8 +31,11 @@ void Doors::SlotClosing()
     if (state == OPENED)
     {
         state = CLOSING;
-        closingTimer.start(TIME_DOOR_CLOSE);
-        SignalDoorIsNotClosed();
+        closingTimer.start(TIME_DOOR_CLOSING);
+    }
+    else if (state == CLOSED)
+    {
+        emit SignalDoorIsClosed()
     }
 }
 
@@ -43,8 +44,7 @@ void Doors::SlotSetOpen()
     if (state == OPENING)
     {
         state = OPENED;
-        openedTimer.start(TIME_DOOR_OPEN);
-        SignalDoorIsNotClosed();
+        openedTimer.start(TIME_DOOR_OPENED);
     }
 }
 void Doors::SlotSetClose()
@@ -52,7 +52,10 @@ void Doors::SlotSetClose()
     if (state == CLOSING)
     {
         state = CLOSED;
-        openedTimer.start(TIME_DOOR_OPEN);
-        SignalDoorIsClosed();
+        emit SignalDoorIsClosed();
+    }
+    else if (state == CLOSED)
+    {
+        emit SignalDoorIsClosed();
     }
 }

@@ -1,10 +1,14 @@
+#ifndef CONTROLLER_HPP
+#define CONTROLLER_HPP
+
 #include "QObject"
 #include "Button.hpp"
 #include "Set/Set.hpp"
 #include <vector>
 
-class Controller
+class Controller : QObject
 {
+    Q_OBJECT
     enum Direction
     {
         UP,
@@ -14,6 +18,7 @@ class Controller
     enum ControllerState
     {
         WAITING,
+        GOT_TARGET,
         PROCESSING
     };
 
@@ -23,13 +28,15 @@ public:
 
 public signals:
     void SignalNextFloor(int floor);
+    void SignalButtonReset(int floor);
+    void SignalSelfWaiting();
 
 public slots:
     void SlotFloorPassed(int floor);
-    void SlotFloorReached(int floor);
 
 private slots:
     void SlotFloorToVisit(int floor);
+    void SlotMakeWaiting();
 
 private:
     void AddFloorToQueue(int floor)
@@ -37,9 +44,13 @@ private:
 
     ControllerState state;
     Direction direction;
+
     int currentFloor;
+    int targetFloor;
     int floorCount;
     Set<int> currentDirectionSet;
     Set<int> nextDirectionSet;
-    std::vector<Button> buttons;
+    std::vector<Button*> buttons;
 };
+
+#endif

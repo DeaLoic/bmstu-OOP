@@ -1,11 +1,17 @@
+#ifndef CABIN_HPP
+#define CABIN_HPP
+
+#include <QObject>
+#include <QTimer>
 #include "Doors.hpp"
 
-class Cabin
+class Cabin : public QObject
 {
+    Q_OBJECT
     enum CabinState
     {
-        STAND_DOOR_CLOSED,
-        STAND_DOOR_NOT_CLOSED,
+        STAND,
+        GOT_TARGET,
         MOVING
     };
 
@@ -13,23 +19,25 @@ public:
     Cabin();
 
 public signals:
-    void SignalFloorReached(int floor);
     void SignalFloorPassed(int floor);
-    void SignalOpenningDoor();
+    void SignalFloorReached(int floor);
+    void SignalStanding();
     void SignalClosingDoor();
 
 public slots:
     void SlotNextFloor(int floor);
-    void SlotDoorClosed();
-    void SlotDoorNotClosing();
+    void SlotMoving();
+    void SlotStanding();
 
 private:
-    void MoveToFloor(int floor);
     void FloorStep(int floor);
 
     int currentFloor;
+    int targetFloor;
     Doors doors;
     CabinState state;
 
     QTimer movingTimer;
-}
+};
+
+#endif

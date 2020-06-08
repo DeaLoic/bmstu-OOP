@@ -1,5 +1,12 @@
-class Doors
+#ifndef DOORS_HPP
+#define DOORS_HPP
+
+#include <QObject>
+#include <QTimer>
+
+class Doors : public QObject
 {
+    Q_OBJECT
     enum DoorsState
     {
         CLOSED,
@@ -13,7 +20,6 @@ public:
 
 public signals:
     void SignalDoorIsClosed();
-    void SignalDoorIsNotClosed();
 
 public slots:
     void SlotOpening();
@@ -31,10 +37,4 @@ private:
     QTimer openedTimer;
 };
 
-Doors::Doors(/* args */)
-{
-}
-
-Doors::~Doors()
-{
-}
+#endif

@@ -6,50 +6,46 @@ Controller::Controller(int floors)
     {
         buttons.push_back(new Button(i));
         QObject::connect(buttons[i], SIGNAL(SignalButtonPressed(int)), this, SLOT(SlotFloorToVisit(int)));
+        QObject::connect(this, SIGNAL(SignalButtonReset(int)), buttons[i], SLOT(ButtonReset(int)));
     }
+
+    QObject::connect(this, SIGNAL(SignalSelfWaiting()), this, SLOT(SlotMakeWaiting()));
 }
 
 void Controller::SlotFloorPassed(int floor)
 {
-    this->currentFloor = floor;
-
-}
-
-void Controller::SlotFloorReached(int floor)
-{
-    if (state == PROCESSING)
+    if (state == PROCESSING || (state == WAITING && floor != 0) || state == GOT_TARGET)
     {
+        state = PROCESSING;
         this->currentFloor = floor;
-        if (currentDirectionSet.IsContain(floor))
+        if (targetFloor == floor)
         {
             currentDirectionSet.Remove(floor);
-            buttons[floor]->Reset();
+            emit SignalButtonReset(floor);
         }
 
-        floor = TakeNextFloor();
-        if (floor != currentFloor)
-        {
-            emit SignalNextFloor(floor);
-        }
-        else
-        {
-            state = WAITING;
-        }
+        targetFloor = TakeNextFloor();
+        emit SignalNextFloor(targetFloor);
     }
 }
 
 void Controller::SlotFloorToVisit(int floor)
 {
-    state = PROCESSING;
+    state = GOT_TARGET;
     AddFloorToQueue(floor);
     floor = TakeNextFloor();
     emit SignalNextFloor(floor);
 }
 
+void Controller::SlotMakeWaiting(int floor)
+{
+    state = WAITING;
+}
+
 int Controller::TakeNextFloor()
 {
     int floor = 0;
-    if (state == PROCESSING)
+    if (state == PROCESSING || state == GOT_TARGET)
     {
         if (direction == UP)
         {
@@ -59,7 +55,7 @@ int Controller::TakeNextFloor()
                 currentDirectionSet = nextDirectionSet;
                 if (!currentDirectionSet.Max(floor))
                 {
-                    state = WAITING;
+                    emit SignalSelfWaiting();
                 }
             }
         }
@@ -71,7 +67,7 @@ int Controller::TakeNextFloor()
                 currentDirectionSet = nextDirectionSet;
                 if (!currentDirectionSet.Min(floor))
                 {
-                    state = WAITING;
+                    emit SignalSelfWaiting();
                 }
             }
         }
